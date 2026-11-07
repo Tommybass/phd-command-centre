@@ -2,8 +2,8 @@
 const DashboardView = {
   render() {
     const d = Store.data;
-    const welcome = Store.isEmpty() ? `<div class="banner info"><div class="grow" style="flex:1;min-width:220px"><strong>${esc(t('welcomeTitle'))}</strong><br><span class="small">${esc(t('welcomeText'))}</span></div>
-      <button class="btn primary" data-action="load-sample">${esc(t('loadSample'))}</button>
+    const welcome = Store.isEmpty() && !Sync.phone ? `<div class="banner info"><div class="grow" style="flex:1;min-width:220px"><strong>${esc(t('welcomeTitle'))}</strong><br><span class="small">${esc(t('welcomeText'))}</span></div>
+      ${typeof buildSampleData === 'function' ? `<button class="btn primary" data-action="load-sample">${esc(t('loadSample'))}</button>` : ''}
       ${Store.fsSupported ? `<button class="btn" data-action="connect">${esc(t('connectFolder'))}</button>` : ''}</div>` : '';
     const storageWarn = Sync.phone ? phoneBanner() : !Store.isEmpty() && Store.dirState !== 'granted' ?`<div class="banner"><span style="flex:1;min-width:200px" class="small">${esc(Store.dirState === 'prompt' ? t('storageReconnect') : (Store.fsSupported ? t('storageBrowser') : t('noFsApi')))}</span>
       ${Store.dirState === 'prompt' ? `<button class="btn primary" data-action="reconnect">${esc(t('reconnect'))}</button>` : (Store.fsSupported ? `<button class="btn primary" data-action="connect">${esc(t('connectFolder'))}</button>` : '')}</div>` : '';

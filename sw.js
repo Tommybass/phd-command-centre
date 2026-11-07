@@ -1,6 +1,6 @@
 /* Offline support. Network first (always the newest version when online), cache as fallback when offline.
    The build script replaces VERSION so every published update gets a fresh cache. */
-const VERSION = '202611070236';
+const VERSION = '202611070245';
 const CACHE = 'phdcc-' + VERSION;
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'css/app.css', 'css/time.css', 'css/records.css',
   'js/i18n.js', 'js/ui.js', 'js/store.js', 'js/sync.js', 'js/cite.js', 'js/ai.js', 'js/notes.js', 'js/plan.js', 'js/time.js',

@@ -39,7 +39,7 @@ const SettingsView = {
             <button class="btn small" data-action="exp-ris">RIS</button><button class="btn small" data-action="exp-bib">BibTeX</button></div>
         </div></div>
         <div class="card c6"><h2>${esc(t('sampleData'))}</h2>
-          <div class="row"><button class="btn" data-action="load-sample">${esc(t('loadSample'))}</button>${Store.hasSample() ? `<button class="btn" data-action="remove-sample">${esc(t('removeSample'))}</button>` : ''}</div>
+          <div class="row">${typeof buildSampleData === 'function' ? `<button class="btn" data-action="load-sample">${esc(t('loadSample'))}</button>` : `<span class="small muted">${esc(t('noSampleHere'))}</span>`}${Store.hasSample() ? `<button class="btn" data-action="remove-sample">${esc(t('removeSample'))}</button>` : ''}</div>
           <h2 style="margin-top:20px">${esc(t('shortcuts'))}</h2>
           <table><tbody>${keys.map(([k, v]) => `<tr><td style="width:90px"><kbd>${esc(k)}</kbd></td><td>${esc(v)}</td></tr>`).join('')}</tbody></table>
         </div>
