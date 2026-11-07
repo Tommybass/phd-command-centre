@@ -1,0 +1,36 @@
+/* Stage 5: records, CV, reviews, study cards */
+.cv-preview { font-family: var(--font); }
+.cv-preview h1 { font-size: 1.5rem; margin-bottom: 2px; }
+.cv-preview h2 { font-family: var(--font); font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 4px; margin: 20px 0 8px; }
+.cv-preview h3 { font-size: .9rem; margin: 10px 0 4px; color: var(--muted); }
+.cv-preview p { margin: 0 0 6px; }
+.cv-preview .muted { color: var(--muted); font-size: 13.5px; }
+.hang { padding-left: 2em; text-indent: -2em; }
+.hang .btn { text-indent: 0; }
+.study { max-width: 720px; margin: 0 auto; padding: 22px 26px; }
+.card-front { font-family: var(--serif); font-size: 1.3rem; line-height: 1.45; margin: 18px 0; min-height: 70px; }
+.card-front p, .card-back p { margin-bottom: 8px; }
+.card-back { font-size: 15.5px; line-height: 1.6; margin: 12px 0; }
+.study hr { border: 0; border-top: 1px dashed var(--border); }
+.show-ans { width: 100%; justify-content: center; padding: 12px; font-size: 15px; }
+.grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
+.grades .btn { flex-direction: column; gap: 2px; padding: 10px 6px; }
+.grades .btn span { font-size: 11.5px; color: var(--muted); }
+.grades .btn kbd { margin-top: 2px; }
+.grades .g0 { border-color: var(--danger); } .grades .g0 b { color: var(--danger); }
+.grades .g1 { border-color: var(--warn); } .grades .g1 b { color: var(--warn); }
+.grades .g2 { border-color: var(--ok); } .grades .g2 b { color: var(--ok); }
+.grades .g3 { border-color: var(--accent); } .grades .g3 b { color: var(--accent); }
+.done-card { text-align: center; }
+.forecast { display: flex; gap: 10px; align-items: flex-end; height: 100px; padding-top: 10px; }
+.forecast > div { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; font-size: 11px; color: var(--muted); height: 100%; }
+.forecast i { display: block; width: 100%; max-width: 34px; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 2px; }
+.forecast b { color: var(--text); font-weight: 600; }
+@media (max-width: 760px) { .grades { grid-template-columns: repeat(2, 1fr); } .study { padding: 16px; } }
+@media print { .no-print { display: none !important; } }
+
+/* Phone sync and installed-app (standalone) layout */
+.sync-btn { position: relative; }
+.sync-btn.has-pending { border-color: var(--warn); color: var(--warn); }
+.sync-n { font-size: 11px; background: var(--warn); color: #fff; border-radius: 99px; padding: 0 5px; }
+@media (display-mode: standalone) { .topbar { padding-top: calc(8px + env(safe-area-inset-top)); } .sidebar { top: calc(53px + env(safe-area-inset-top)); } }
