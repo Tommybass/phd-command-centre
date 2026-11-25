@@ -43,9 +43,9 @@ const CardsView = {
     const mx = Math.max(1, ...fc.map(x => x.n));
     const forecast = `<div class="card" style="margin-top:14px"><h3 class="small muted">${esc(t('forecast'))}</h3><div class="forecast">${fc.map(x => `<div title="${x.n}"><i style="height:${x.n / mx * 60}px"></i><span>${esc(parseISO(x.d).toLocaleDateString(LANG === 'fr' ? 'fr-CA' : 'en-CA', { weekday: 'narrow' }))}</span><b>${x.n}</b></div>`).join('')}</div>
       <p class="small faint">${esc(t('matureLine', { n: C.filter(x => x.interval >= 21).length }))}</p></div>`;
-    if (!c) return deckSel + `<div class="card study done-card"><h2>✓ ${esc(t('sessionDone'))}</h2><p class="muted">${esc(t('sessionDoneText', { n: CardState.done }))}</p><button class="btn" data-action="restart">↻ ${esc(t('checkAgain'))}</button></div>` + forecast;
+    if (!c) return deckSel + `<div class="card study done-card"><h2>✓ ${esc(t('sessionDone'))}</h2><p class="muted">${esc(t('sessionDoneText', { n: CardState.done }))}</p><button class="btn" data-action="restart">${esc(t('checkAgain'))}</button></div>` + forecast;
     return deckSel + `<div class="card study">
-      <div class="row small muted"><span class="pill">${esc(c.deck)}</span>${SRS.isNew(c) ? `<span class="pill accent">${esc(t('newWord'))}</span>` : ''}${c.ai ? `<span class="pill ai">✎ ${esc(t('aiDraft'))}</span>` : ''}<span class="spacer"></span>${CardState.i + 1} / ${q.length}<button class="btn ghost small" data-action="edit-card" data-id="${c.id}">${esc(t('edit'))}</button></div>
+      <div class="row small muted"><span class="pill">${esc(c.deck)}</span>${SRS.isNew(c) ? `<span class="pill accent">${esc(t('newWord'))}</span>` : ''}${c.ai ? `<span class="pill ai">${esc(t('aiDraft'))}</span>` : ''}<span class="spacer"></span>${CardState.i + 1} / ${q.length}<button class="btn ghost small" data-action="edit-card" data-id="${c.id}">${esc(t('edit'))}</button></div>
       <div class="card-front">${Links.render(c.front)}</div>
       ${CardState.shown ? `<hr><div class="card-back">${Links.render(c.back)}</div>${c.from ? `<p class="small faint">${esc(t('fromLabel'))}: <a href="${Links.href(c.from)}">${esc(Links.label(c.from))}</a></p>` : ''}
         <div class="grades">${[0, 1, 2, 3].map(g => `<button class="btn g${g}" data-grade="${g}"><b>${esc(t('gr_' + g))}</b><span>${SRS.preview(c, g)} ${esc(t('dayShort'))}</span><kbd>${g + 1}</kbd></button>`).join('')}</div>`
@@ -55,9 +55,9 @@ const CardsView = {
 
   browse() {
     const C = Store.all('cards').slice().sort((a, b) => a.deck.localeCompare(b.deck) || a.due.localeCompare(b.due));
-    return `<div class="row" style="margin-bottom:10px"><span class="small muted" style="flex:1">${esc(t('browseHelp'))}</span><button class="btn" data-action="export-cards">⇩ CSV (Anki)</button></div>
-      ${C.length ? `<div class="table-wrap"><table><thead><tr><th>${esc(t('deck'))}</th><th>${esc(t('front'))}</th><th class="hide-mobile">${esc(t('back'))}</th><th>${esc(t('t_due'))}</th><th class="hide-mobile">${esc(t('interval'))}</th><th></th></tr></thead><tbody>
-      ${C.map(c => `<tr><td class="small">${esc(c.deck)}</td><td>${esc(c.front.slice(0, 90))}${c.ai ? ` <span class="pill ai">✎</span>` : ''}</td><td class="small hide-mobile muted">${esc(c.back.replace(/\s+/g, ' ').slice(0, 110))}</td><td class="small" style="white-space:nowrap">${SRS.isNew(c) ? esc(t('newWord')) : esc(fmtDate(c.due, { day: 'numeric', month: 'short' }))}</td><td class="small hide-mobile">${c.interval} ${esc(t('dayShort'))}</td>
+    return `<div class="row" style="margin-bottom:10px"><span class="small muted" style="flex:1">${esc(t('browseHelp'))}</span><button class="btn" data-action="export-cards">CSV (Anki)</button></div>
+      ${C.length ? `<div class="table-wrap"><table><thead><tr><th>${esc(t('deck'))}</th><th>${esc(t('cardFront'))}</th><th class="hide-mobile">${esc(t('cardBack'))}</th><th>${esc(t('t_due'))}</th><th class="hide-mobile">${esc(t('interval'))}</th><th></th></tr></thead><tbody>
+      ${C.map(c => `<tr><td class="small">${esc(c.deck)}</td><td>${esc(c.front.slice(0, 90))}${c.ai ? ` <span class="pill ai">${esc(t('aiDraft'))}</span>` : ''}</td><td class="small hide-mobile muted">${esc(c.back.replace(/\s+/g, ' ').slice(0, 110))}</td><td class="small" style="white-space:nowrap">${SRS.isNew(c) ? esc(t('newWord')) : esc(fmtDate(c.due, { day: 'numeric', month: 'short' }))}</td><td class="small hide-mobile">${c.interval} ${esc(t('dayShort'))}</td>
         <td><button class="btn ghost small" data-action="edit-card" data-id="${c.id}">${esc(t('edit'))}</button></td></tr>`).join('')}</tbody></table></div>` : `<div class="card empty">${esc(t('noCards'))}</div>`}`;
   },
 
@@ -66,7 +66,7 @@ const CardsView = {
     const dk = decks();
     return `<div class="card" style="margin-bottom:14px"><p class="small muted">${esc(t('makeHelp'))}</p>
       <div class="row"><label class="field" style="min-width:220px"><span>${esc(t('deck'))}</span><input id="mk-deck" list="deck-list" value="${esc(dk[0] || t('defaultDeck'))}"><datalist id="deck-list">${[...dk, t('defaultDeck'), t('deckDefence'), t('deckTheorists'), t('deckMethods')].filter((x, i, a) => a.indexOf(x) === i).map(d => `<option value="${esc(d)}">`).join('')}</datalist></label>
-      <span class="spacer"></span><button class="btn ai" data-action="ai-cards">✎ ${esc(t('aiCards'))}</button></div></div>
+      <span class="spacer"></span><button class="btn ai" data-action="ai-cards">${esc(t('aiCards'))}</button></div></div>
       ${cands.length ? `<div class="card"><div class="row" style="margin-bottom:6px"><strong>${esc(t('candidates', { n: cands.length }))}</strong><span class="spacer"></span><button class="btn small" data-action="toggle-all">${esc(t('toggleAll'))}</button><button class="btn primary" data-action="add-cands">${esc(t('addSelected'))}</button></div>
         <ul class="list">${cands.map((c, i) => `<li><input type="checkbox" class="check" data-cand="${i}" ${c.pre ? 'checked' : ''}><div class="grow"><span class="pill">${esc(t('cs2_' + c.how))}</span> <strong>${esc(c.front.slice(0, 140))}</strong><div class="small muted">${esc(c.back.replace(/\s+/g, ' ').slice(0, 220))}</div></div></li>`).join('')}</ul></div>`
         : `<div class="card empty">${esc(t('noCandidates'))}</div>`}`;
@@ -144,8 +144,8 @@ function cardModal(c) {
   const v = c || { front: '', back: '', deck: decks()[0] || t('defaultDeck') };
   const m = modal({
     title: c ? t('edit') : t('newCard'), wide: true,
-    body: `<label class="field"><span>${esc(t('front'))}</span><textarea id="cm-front" rows="3">${esc(v.front)}</textarea></label>
-      <label class="field"><span>${esc(t('back'))}</span><textarea id="cm-back" rows="5">${esc(v.back)}</textarea></label>
+    body: `<label class="field"><span>${esc(t('cardFront'))}</span><textarea id="cm-front" rows="3">${esc(v.front)}</textarea></label>
+      <label class="field"><span>${esc(t('cardBack'))}</span><textarea id="cm-back" rows="5">${esc(v.back)}</textarea></label>
       <label class="field"><span>${esc(t('deck'))}</span><input id="cm-deck" list="cm-decks" value="${esc(v.deck)}"><datalist id="cm-decks">${decks().map(d => `<option value="${esc(d)}">`).join('')}</datalist></label>
       ${c && c.ai ? `<label class="row small"><input type="checkbox" id="cm-ok"> ${esc(t('confirmCard'))}</label>` : ''}`,
     foot: `${c ? `<button class="btn danger" id="cm-del">${esc(t('delete'))}</button><span class="spacer"></span>` : ''}<button class="btn" id="cm-cancel">${esc(t('cancel'))}</button><button class="btn primary" id="cm-save">${esc(t('save'))}</button>`,

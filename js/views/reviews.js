@@ -54,7 +54,7 @@ const ReviewsView = {
           ${F('blockers', t('rv_blockers'), t('rv_blockersHint'), sugg('blockers', [...overdue.map(x => `${t('overdue')}: ${x.title}`), ...risks.map(w => `${w.m.title} — ${w.h.msg}`)]))}
           ${F('lessons', t('rv_lessons'), t('rv_lessonsHint'))}
           ${F('plan', t('rv_plan'), t('rv_planHint'), sugg('plan', [...nextMs.map(m => `◆ ${m.title} (${fmtDate(m.due)})`), ...nextDue.map(x => `${x.title} (${fmtDate(x.due)})`)]))}
-          <div class="span-all row"><a class="btn" href="#/calendar/week?d=${addDays(ws, 7)}">▦ ${esc(t('planNextWeek'))}</a><span class="spacer"></span><button class="btn primary">${esc(t('saveReview'))}</button></div>
+          <div class="span-all row"><a class="btn" href="#/calendar/week?d=${addDays(ws, 7)}">${esc(t('planNextWeek'))}</a><span class="spacer"></span><button class="btn primary">${esc(t('saveReview'))}</button></div>
         </form></div>
         ${past.length ? `<div class="card c12"><h2>${esc(t('pastReviews'))}</h2><ul class="list small">${past.slice(0, 12).map(p => `<li><a href="#/reviews/weekly?w=${p.period}" style="width:150px;flex:none">${esc(fmtDate(p.period, { day: 'numeric', month: 'short', year: 'numeric' }))}</a><span class="grow muted">${esc((p.wins || '').split('\n')[0].slice(0, 120))}</span><span class="faint">${'●'.repeat(Number(p.energy) || 0)}</span></li>`).join('')}</ul></div>` : ''}
       </div>`;
@@ -69,8 +69,8 @@ const ReviewsView = {
     return `<div class="row" style="margin-bottom:12px"><a class="btn icon" href="#/reviews/monthly?m=${prev}">‹</a><strong>${esc(parseISO(from).toLocaleDateString(LANG === 'fr' ? 'fr-CA' : 'en-CA', { month: 'long', year: 'numeric' }))}</strong><a class="btn icon" href="#/reviews/monthly?m=${next}">›</a>
       <span class="spacer"></span>${saved ? `<span class="pill ok">✓ ${esc(t('saved'))}</span>` : `<span class="pill">${esc(t('draftGenerated'))}</span>`}</div>
       <div class="card"><p class="small muted">${esc(t('monthlyHelp'))}</p><textarea id="mr-text" class="prompt-box" rows="22">${esc(text)}</textarea>
-      <div class="row" style="margin-top:10px"><button class="btn" data-action="mr-regen">↻ ${esc(t('regenerate'))}</button><button class="btn ai" data-action="mr-prompt">✎ ${esc(t('mrPrompt'))}</button><span class="spacer"></span>
-        <button class="btn" data-action="mr-copy">${esc(t('copy'))}</button><button class="btn" data-action="mr-dl">⇩ .md</button><button class="btn primary" data-action="mr-save" data-m="${m}">${esc(t('save'))}</button></div></div>`;
+      <div class="row" style="margin-top:10px"><button class="btn" data-action="mr-regen">${esc(t('regenerate'))}</button><button class="btn ai" data-action="mr-prompt">${esc(t('mrPrompt'))}</button><span class="spacer"></span>
+        <button class="btn" data-action="mr-copy">${esc(t('copy'))}</button><button class="btn" data-action="mr-dl">.md</button><button class="btn primary" data-action="mr-save" data-m="${m}">${esc(t('save'))}</button></div></div>`;
   },
 
   term(q) {
@@ -85,7 +85,7 @@ const ReviewsView = {
       <span class="spacer"></span>${r.id ? `<span class="pill ok">✓ ${esc(t('saved'))}</span>` : ''}</div>
       <div class="dash"><div class="card c12"><h2>${esc(t('inNumbers'))}</h2>${statsHtml(st)}${msDone.length ? `<p class="small" style="margin-top:8px">◆ ${msDone.map(m => esc(m.title)).join(' · ')}</p>` : ''}</div>
       <form class="card c12 grid g2" data-form="term" data-key="${key}">${F('proud')}${F('struggled')}${F('learned')}${F('change')}${F('goals', 4)}${F('wellbeing')}
-        <div class="span-all row"><button class="btn" type="button" data-action="tr-dl" data-key="${key}">⇩ .md</button><span class="spacer"></span><button class="btn primary">${esc(t('saveReview'))}</button></div></form></div>`;
+        <div class="span-all row"><button class="btn" type="button" data-action="tr-dl" data-key="${key}">.md</button><span class="spacer"></span><button class="btn primary">${esc(t('saveReview'))}</button></div></form></div>`;
   },
 
   bind(root, params, query) {
@@ -132,7 +132,7 @@ function monthlyReport(m, from, to) {
     `- ${t('words')}: ${st.words.toLocaleString()}`, `- ${t('rv_passes')}: ${st.passes.length}`, `- ${t('rv_notes')}: ${st.notes.length}`, `- ${t('nav_meetings')}: ${st.meetings.length}`, ''];
   if (st.ms.length) { L.push(`## ${t('puMilestones')}`); st.ms.forEach(x => L.push(`- ◆ ${x.title} (${projectName(x.projectId)})`)); L.push(''); }
   const thesis = Store.all('projects').find(p => p.area === 'thesis');
-  if (thesis && Plan.projectProgress(thesis.id) != null) L.push(`## ${t('roadmapCard')}`, `- ${thesis.title}: ${Plan.projectProgress(thesis.id)}%`, ...Plan.warnings().map(w => `- ⚠ ${w.m.title} — ${w.h.msg}`), '');
+  if (thesis && Plan.projectProgress(thesis.id) != null) L.push(`## ${t('roadmapCard')}`, `- ${thesis.title}: ${Plan.projectProgress(thesis.id)}%`, ...Plan.warnings().map(w => `- ${w.m.title} — ${w.h.msg}`), '');
   const pubs = Store.all('projects').filter(p => p.area === 'publication');
   if (pubs.length) { L.push(`## ${t('pipeline')}`); pubs.forEach(p => L.push(`- ${p.title}: ${t('stg_' + p.stage)}${p.wordGoal ? ` · ${(p.wordCount || 0).toLocaleString()}/${p.wordGoal.toLocaleString()} ${t('words')}` : ''}`)); L.push(''); }
   const reads = uniq(st.passes.map(x => x.s));

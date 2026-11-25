@@ -15,11 +15,11 @@ const CalendarView = {
     const head = `<div class="page-head"><div><h1>${esc(t('nav_calendar'))}</h1><p class="sub">${esc(range)}</p></div><span class="spacer"></span>
       <div class="row"><a class="btn icon" href="#/calendar/${view}?d=${prev}" aria-label="‹">‹</a><a class="btn" href="#/calendar/${view}?d=${todayISO()}">${esc(t('today'))}</a><a class="btn icon" href="#/calendar/${view}?d=${next}" aria-label="›">›</a>
       <button class="btn primary" data-action="new-event" data-date="${d}">+ ${esc(t('newEvent'))}</button>
-      <button class="btn" data-action="autoplan">✦ ${esc(t('autoPlan'))}</button>
+      <button class="btn" data-action="autoplan">${esc(t('autoPlan'))}</button>
       <details class="menu"><summary class="btn">⋯</summary><div class="menu-pop">
         <button class="btn ghost" data-action="availability">${esc(t('availability'))}</button>
-        <button class="btn ghost" data-action="export-ics">⇩ ${esc(t('exportIcs'))}</button>
-        <button class="btn ghost" data-action="import-ics">⇧ ${esc(t('importIcs'))}</button></div></details></div></div>
+        <button class="btn ghost" data-action="export-ics">${esc(t('exportIcs'))}</button>
+        <button class="btn ghost" data-action="import-ics">${esc(t('importIcs'))}</button></div></details></div></div>
       <nav class="tabs">${tabs}</nav>`;
     if (view === 'time') return head + this.timeView(d);
     const cap = Cal.capacity(ws);
@@ -110,7 +110,7 @@ const CalendarView = {
         <div style="align-self:end"><button class="btn primary">${esc(t('save'))}</button></div></div></form>
       <div class="card c12"><h2>${esc(t('sessions'))}</h2>${recent.length ? `<div class="table-wrap"><table><thead><tr><th>${esc(t('date'))}</th><th>${esc(t('minutes'))}</th><th>${esc(t('t_project'))}</th><th class="hide-mobile">${esc(t('p_area'))}</th><th class="hide-mobile">${esc(t('logNote'))}</th><th></th></tr></thead><tbody>
         ${recent.map(l => `<tr><td style="white-space:nowrap">${esc(fmtDate(l.start.slice(0, 10)))} <span class="faint">${esc(fmtTime(new Date(l.start)))}</span></td><td>${l.minutes}</td><td>${esc(projectName(l.projectId) || '—')}${l.taskId ? `<div class="small faint">${esc((Store.get('tasks', l.taskId) || {}).title || '')}</div>` : ''}</td><td class="hide-mobile">${esc(t('area_' + l.area))}</td><td class="small hide-mobile">${esc(l.note)}</td>
-          <td><button class="btn ghost small danger" data-action="del-log" data-id="${l.id}" aria-label="${esc(t('delete'))}">✕</button></td></tr>`).join('')}</tbody></table></div>` : `<p class="empty">${esc(t('noSessions'))}</p>`}</div></div>`;
+          <td><button class="btn ghost small danger" data-action="del-log" data-id="${l.id}" aria-label="${esc(t('delete'))}">${icon('x', 14)}</button></td></tr>`).join('')}</tbody></table></div>` : `<p class="empty">${esc(t('noSessions'))}</p>`}</div></div>`;
   },
 
   bind(root, params, query) {
@@ -206,7 +206,7 @@ function taskBlockModal(x) {
       <label class="field"><span>${esc(t('ms_start'))}</span><input type="time" id="tb-start" value="${x.scheduled.start}" step="900"></label>
       <label class="field"><span>${esc(t('endTime'))}</span><input type="time" id="tb-end" value="${x.scheduled.end}" step="900"></label></div>
       <p class="small muted">${x.projectId ? esc(projectName(x.projectId)) + ' · ' : ''}${x.energy ? esc(t('en_' + x.energy)) : ''}${x.due ? ' · ' + esc(t('t_due')) + ' ' + esc(fmtDate(x.due)) : ''}</p>`,
-    foot: `<button class="btn" id="tb-unsched">${esc(t('unschedule'))}</button><button class="btn" id="tb-focus">▶ ${esc(t('focus'))}</button><button class="btn" id="tb-done">✓ ${esc(t('markTaskDone'))}</button><span class="spacer"></span><button class="btn primary" id="tb-save">${esc(t('save'))}</button>`,
+    foot: `<button class="btn" id="tb-unsched">${esc(t('unschedule'))}</button><button class="btn" id="tb-focus">${icon('play', 14)} ${esc(t('focus'))}</button><button class="btn" id="tb-done">✓ ${esc(t('markTaskDone'))}</button><span class="spacer"></span><button class="btn primary" id="tb-save">${esc(t('save'))}</button>`,
   });
   const r = m.root, g = id => $('#' + id, r);
   g('tb-save').onclick = () => { Store.update('tasks', x.id, { scheduled: { date: g('tb-date').value, start: g('tb-start').value, end: g('tb-end').value } }); m.close(); App.render(); };
@@ -259,7 +259,7 @@ function exportIcsModal() {
     title: t('exportIcs'),
     body: `<p class="small muted">${esc(t('icsExportHelp'))}</p>
       ${['events', 'meetings', 'tasks', 'dues'].map(k => `<label class="row"><input type="checkbox" data-k="${k}" checked> ${esc(t('ics_' + k))}</label>`).join('')}`,
-    foot: `<button class="btn" id="ix-cancel">${esc(t('cancel'))}</button><button class="btn primary" id="ix-ok">⇩ .ics</button>`,
+    foot: `<button class="btn" id="ix-cancel">${esc(t('cancel'))}</button><button class="btn primary" id="ix-ok">.ics</button>`,
   });
   const r = m.root;
   $('#ix-cancel', r).onclick = m.close;

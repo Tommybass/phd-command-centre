@@ -6,11 +6,11 @@ const SettingsView = {
     if (Store.dirState === 'granted') storage = `<p>✓ ${esc(t('storageConnected', { name: Store.dir.name }))}</p>
       <div class="row"><button class="btn primary" data-action="save-now">${esc(t('saveNow'))}</button><button class="btn" data-action="connect">${esc(t('connectFolder'))}…</button><button class="btn ghost danger" data-action="disconnect">${esc(t('disconnect'))}</button></div>`;
     else if (Store.dirState === 'prompt') storage = `<p>${esc(t('storageReconnect'))}</p><div class="row"><button class="btn primary" data-action="reconnect">${esc(t('reconnect'))}</button><button class="btn ghost danger" data-action="disconnect">${esc(t('disconnect'))}</button></div>`;
-    else if (Store.dirState === 'unsupported') storage = `<p>${esc(t('phoneStorage'))}</p><button class="btn primary" data-action="open-sync">⇅ ${esc(t('phoneSync'))}</button>`;
+    else if (Store.dirState === 'unsupported') storage = `<p>${esc(t('phoneStorage'))}</p><button class="btn primary" data-action="open-sync">${esc(t('phoneSync'))}</button>`;
     else storage = `<p>${esc(t('storageBrowser'))}</p><button class="btn primary" data-action="connect">${esc(t('connectFolder'))}</button>`;
     if (Store.dirState === 'granted') {
       const M = Sync.meta;
-      storage += `<h3 class="small muted" style="margin-top:14px">📱 ${esc(t('phoneInbox'))}</h3><p class="small muted">${esc(t('phoneInboxHelp', { name: Store.dir.name }))}</p>
+      storage += `<h3 class="small muted" style="margin-top:14px">${esc(t('phoneInbox'))}</h3><p class="small muted">${esc(t('phoneInboxHelp', { name: Store.dir.name }))}</p>
         <p class="small">${esc(M.lastImport ? t('inboxLast', { t: fmtDate(M.lastImport.slice(0, 10)) + ' ' + fmtTime(new Date(M.lastImport)), n: M.lastCount }) : t('inboxNever'))}</p>
         <button class="btn small" data-action="check-inbox">${esc(t('checkInbox'))}</button>`;
     }
@@ -30,9 +30,9 @@ const SettingsView = {
         </div></div>
         <div class="card c6"><h2>${esc(t('storage'))}</h2>${storage}<p class="small faint" style="margin-top:10px">${esc(counts)}</p></div>
         <div class="card c6"><h2>${esc(t('backupImport'))}</h2><div class="grid">
-          <button class="btn" data-action="export-json">⇩ ${esc(t('exportJSON'))}</button>
-          <button class="btn" data-action="import-json">⇧ ${esc(t('importJSON'))}</button>
-          <button class="btn" data-action="import-zotero">⇧ ${esc(t('importZotero'))}</button>
+          <button class="btn" data-action="export-json">${esc(t('exportJSON'))}</button>
+          <button class="btn" data-action="import-json">${esc(t('importJSON'))}</button>
+          <button class="btn" data-action="import-zotero">${esc(t('importZotero'))}</button>
           <p class="small muted">${esc(t('zoteroHelp'))}</p>
           <div class="row"><span class="small muted">${esc(t('export'))} (${esc(t('all'))}):</span>
             <button class="btn small" data-action="exp-apa">${esc(t('exportAPA'))}</button><button class="btn small" data-action="exp-csv">CSV</button>

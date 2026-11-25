@@ -30,10 +30,10 @@ const RecordsView = {
         <div class="bar" style="margin-top:8px"><i style="width:${items.length ? done / items.length * 100 : 0}%"></i></div></div>
       ${sections.map(sec => `<div class="card" style="margin-bottom:12px"><h2>${esc(I18N.en['cs_' + sec] ? t('cs_' + sec) : sec)}</h2><ul class="list">
         ${items.filter(i => i.section === sec).map(i => `<li><input type="checkbox" class="check" data-check="${i.id}" ${i.done ? 'checked' : ''}><div class="grow">
-          <span class="${i.done ? 'done-text' : ''}">${esc(i.text)}</span>${i.verify ? ` <span class="pill warn" title="${esc(t('verifyHint'))}">⚠ ${esc(t('verifyShort'))}</span>` : ''}
+          <span class="${i.done ? 'done-text' : ''}">${esc(i.text)}</span>${i.verify ? ` <span class="pill warn" title="${esc(t('verifyHint'))}">${esc(t('verifyShort'))}</span>` : ''}
           ${i.help ? `<div class="small faint">${esc(i.help)}</div>` : ''}
           <input class="inline-input small" data-checknote="${i.id}" value="${esc(i.note || '')}" placeholder="${esc(t('checkNoteHint'))}">${i.done && i.doneAt ? `<span class="small faint">✓ ${esc(fmtDate(i.doneAt))}</span>` : ''}</div>
-          <button class="btn ghost small danger" data-action="del-rec" data-id="${i.id}" aria-label="${esc(t('delete'))}">✕</button></li>`).join('')}</ul></div>`).join('')}
+          <button class="btn ghost small danger" data-action="del-rec" data-id="${i.id}" aria-label="${esc(t('delete'))}">${icon('x', 14)}</button></li>`).join('')}</ul></div>`).join('')}
       <div class="row" style="margin:18px 0 8px"><h2 style="margin:0">${esc(t('storageMap'))}</h2><span class="spacer"></span><button class="btn small" data-action="new-rec" data-kind="storage">+ ${esc(t('addRow'))}</button></div>
       <p class="small muted">${esc(t('storageMapHelp'))}</p>
       ${this.table('storage', store, ['dataType', 'location', 'encrypted', 'access', 'retention', 'destroyBy'])}`;
@@ -79,11 +79,11 @@ const RecordsView = {
         <div class="row"><span class="stat" style="font-size:1.4rem">${used.toFixed(1)}</span><span class="muted small">/ ${cap || '—'} h</span>${warn ? `<span class="pill ${warn}">${esc(t(warn === 'danger' ? 'overCap' : 'nearCap'))}</span>` : ''}</div>
         ${cap ? `<div class="bar"><i style="width:${pct}%"></i></div>${weeksLeft >= 1 && cap > used ? `<p class="small faint" style="margin-top:4px">${esc(t('hoursPerWeekLeft', { n: ((cap - used) / weeksLeft).toFixed(1) }))}</p>` : ''}` : ''}
         <form class="row" data-form="hours" data-id="${c.id}" style="margin-top:10px"><input type="date" name="date" value="${todayISO()}" style="width:auto"><input type="number" name="hours" step="0.25" min="0" placeholder="h" style="width:80px"><input name="note" placeholder="${esc(t('logNote'))}" style="flex:1;min-width:120px"><button class="btn small">+</button></form>
-        <ul class="list small" style="margin-top:6px">${H.filter(h => h.contractId === c.id).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5).map(h => `<li><span class="faint" style="width:80px">${esc(fmtDate(h.date, { day: 'numeric', month: 'short' }))}</span><span class="grow">${esc(h.note)}</span><b>${h.hours} h</b><button class="btn ghost small danger" data-action="del-rec" data-id="${h.id}" aria-label="${esc(t('delete'))}">✕</button></li>`).join('')}</ul></div>`;
+        <ul class="list small" style="margin-top:6px">${H.filter(h => h.contractId === c.id).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5).map(h => `<li><span class="faint" style="width:80px">${esc(fmtDate(h.date, { day: 'numeric', month: 'short' }))}</span><span class="grow">${esc(h.note)}</span><b>${h.hours} h</b><button class="btn ghost small danger" data-action="del-rec" data-id="${h.id}" aria-label="${esc(t('delete'))}">${icon('x', 14)}</button></li>`).join('')}</ul></div>`;
     }).join('');
     const months = {}; H.forEach(h => { const k = (h.date || '').slice(0, 7), c = Store.get('records', h.contractId); if (!c) return; months[k] = months[k] || {}; months[k][c.role] = (months[k][c.role] || 0) + Number(h.hours || 0); });
     const mk = Object.keys(months).sort().reverse().slice(0, 12);
-    return `<div class="row" style="margin-bottom:10px"><p class="small muted" style="flex:1;margin:0">${esc(t('workHelp'))}</p><button class="btn" data-action="export-hours">⇩ CSV</button><button class="btn primary" data-action="new-rec" data-kind="contract">+ ${esc(t('rk_contract'))}</button></div>
+    return `<div class="row" style="margin-bottom:10px"><p class="small muted" style="flex:1;margin:0">${esc(t('workHelp'))}</p><button class="btn" data-action="export-hours">CSV</button><button class="btn primary" data-action="new-rec" data-kind="contract">+ ${esc(t('rk_contract'))}</button></div>
       <div class="dash">${cards || `<div class="card c12 empty">${esc(t('noRecords'))}</div>`}
       ${mk.length ? `<div class="card c12"><h2>${esc(t('byMonth'))}</h2><div class="table-wrap"><table><thead><tr><th>${esc(t('month'))}</th><th>RA</th><th>TA</th><th>${esc(t('other'))}</th></tr></thead><tbody>${mk.map(k => `<tr><td>${esc(parseISO(k + '-01').toLocaleDateString(LANG === 'fr' ? 'fr-CA' : 'en-CA', { month: 'long', year: 'numeric' }))}</td><td>${(months[k].RA || 0).toFixed(1)}</td><td>${(months[k].TA || 0).toFixed(1)}</td><td>${(months[k].other || 0).toFixed(1)}</td></tr>`).join('')}</tbody></table></div></div>` : ''}</div>`;
   },
@@ -92,7 +92,7 @@ const RecordsView = {
     const R = recs('receipt').sort((a, b) => (b.date || '').localeCompare(a.date || ''));
     const tot = st => R.filter(r => r.rstatus === st).reduce((s, r) => s + (Number(r.amount) || 0), 0);
     return `<div class="dash" style="margin-bottom:14px">${['notclaimed', 'submitted', 'reimbursed'].map(st => `<div class="card c4"><span class="small muted">${esc(t('rs_' + st))}</span><div class="stat">${tot(st).toFixed(2)} <small>CAD</small></div></div>`).join('')}</div>
-      <div class="row" style="margin-bottom:10px"><p class="small muted" style="flex:1;margin:0">${esc(t('receiptHelp'))}</p><button class="btn" data-action="export-receipts">⇩ CSV</button><button class="btn primary" data-action="new-rec" data-kind="receipt">+ ${esc(t('rk_receipt'))}</button></div>
+      <div class="row" style="margin-bottom:10px"><p class="small muted" style="flex:1;margin:0">${esc(t('receiptHelp'))}</p><button class="btn" data-action="export-receipts">CSV</button><button class="btn primary" data-action="new-rec" data-kind="receipt">+ ${esc(t('rk_receipt'))}</button></div>
       ${this.table('receipt', R, ['date', 'vendor', 'amount', 'category', 'projectId', 'rstatus', 'funding', 'location'])}`;
   },
 
@@ -110,7 +110,7 @@ const RecordsView = {
         ${['name', 'title', 'affiliation', 'email', 'orcid', 'website'].map(k => `<label class="field"><span>${esc(t('cv_' + k))}</span><input data-cvh="${k}" value="${esc(S[k] || '')}"></label>`).join('')}
         <button class="btn" data-action="new-cv">+ ${esc(t('addCvItem'))}</button>
         <p class="small muted">${esc(t('cvHelp'))}</p>
-        <div class="row"><button class="btn primary" data-action="cv-word">⇩ Word (.html)</button><button class="btn" data-action="cv-md">⇩ Markdown</button><button class="btn" data-action="cv-copy">${esc(t('copy'))}</button></div></div></div>
+        <div class="row"><button class="btn primary" data-action="cv-word">Word (.html)</button><button class="btn" data-action="cv-md">Markdown</button><button class="btn" data-action="cv-copy">${esc(t('copy'))}</button></div></div></div>
       <div class="card c8 cv-preview">${html}</div></div>`;
   },
 

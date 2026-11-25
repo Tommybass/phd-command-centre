@@ -6,7 +6,7 @@ const JState = (() => {
 })();
 function saveJState() { try { localStorage.setItem('phdcc.journal', JSON.stringify(JState)); } catch { } }
 
-const KIND_ICON = { inbox: '⇣', idea: '✦', decision: '⚖', reflexive: '◐', feedback: '✉', note: '¶' };
+const KIND_ICON = { inbox: icon('inbox', 14), idea: icon('idea', 14), decision: icon('decision', 14), reflexive: icon('contrast', 14), feedback: icon('feedback', 14), note: icon('note', 14) };
 const KIND_HINT = {
   idea: 'hint_idea', decision: 'hint_decision', reflexive: 'hint_reflexive', feedback: 'hint_feedback', note: 'hint_note', inbox: 'hint_inbox',
 };
@@ -27,7 +27,7 @@ const JournalView = {
     const tabs = ['entries', 'decisions', 'feedback'].map(k => `<a class="tab ${tab === k ? 'active' : ''}" href="#/journal?tab=${k}">${esc(t('jt_' + k))}</a>`).join('');
     const head = `<div class="page-head"><div><h1>${esc(t('nav_journal'))}</h1><p class="sub">${esc(t('journalSub'))}</p></div><span class="spacer"></span>
       <div class="row"><button class="btn primary" data-action="new-note">+ ${esc(t('newEntry'))}</button>
-      <button class="btn small" data-action="export-md">⇩ ${esc(t('exportMd'))}</button></div></div><nav class="tabs">${tabs}</nav>`;
+      <button class="btn small" data-action="export-md">${esc(t('exportMd'))}</button></div></div><nav class="tabs">${tabs}</nav>`;
     if (tab === 'decisions') return head + this.decisionTable();
     if (tab === 'feedback') return head + this.feedbackTable();
 
@@ -70,7 +70,7 @@ const JournalView = {
         <div class="span-all"><button class="btn small" data-action="to-tasks">${esc(t('fb_toTasks'))}</button></div></div>` : '';
     return `<div class="card">
       <div class="row" style="margin-bottom:10px"><a class="btn ghost small show-mobile" href="#/journal">← ${esc(t('back'))}</a>
-        <select data-nf="kind" style="width:auto">${options(NOTE_KINDS, n.kind, k => KIND_ICON[k] + ' ' + t('nk_' + k))}</select>
+        <select data-nf="kind" style="width:auto">${options(NOTE_KINDS, n.kind, k => t('nk_' + k))}</select>
         <input type="date" data-nf="date" value="${esc(n.date)}" style="width:auto">
         <span class="spacer"></span>
         <button class="btn small" data-action="toggle-preview" aria-pressed="false">${esc(t('preview'))}</button>
@@ -101,7 +101,7 @@ const JournalView = {
 
   decisionTable() {
     const D = Store.all('notes').filter(n => n.kind === 'decision').sort((a, b) => b.date.localeCompare(a.date));
-    return `<div class="row" style="margin-bottom:10px"><p class="muted small" style="flex:1;margin:0">${esc(t('decSub'))}</p><button class="btn small" data-action="export-dec">⇩ CSV</button></div>
+    return `<div class="row" style="margin-bottom:10px"><p class="muted small" style="flex:1;margin:0">${esc(t('decSub'))}</p><button class="btn small" data-action="export-dec">CSV</button></div>
       ${D.length ? `<div class="table-wrap"><table><thead><tr><th>${esc(t('date'))}</th><th>${esc(t('dec_what'))}</th><th>${esc(t('dec_why'))}</th><th class="hide-mobile">${esc(t('dec_alt'))}</th><th class="hide-mobile">${esc(t('projects'))}</th></tr></thead><tbody>
       ${D.map(n => `<tr class="clickable" data-href="#/journal/${n.id}"><td style="white-space:nowrap">${esc(fmtDate(n.date))}</td><td><strong>${esc(n.decision.what || Links.noteTitle(n))}</strong></td><td class="small">${esc(unlink(n.decision.why))}</td><td class="small hide-mobile">${esc(unlink(n.decision.alternatives))}</td><td class="hide-mobile">${(n.projects || []).map(p => `<span class="pill accent">${esc(projectName(p))}</span>`).join(' ')}</td></tr>`).join('')}
       </tbody></table></div>` : `<div class="card empty">${esc(t('noEntries'))}</div>`}`;

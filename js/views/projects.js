@@ -11,8 +11,8 @@ const ProjectsView = {
     const head = `<div class="page-head"><div><h1>${esc(t('nav_projects'))}</h1><p class="sub">${esc(t('projectsSub3'))}</p></div><span class="spacer"></span>
       <div class="row"><button class="btn primary" data-action="new">+ ${esc(t('newProject'))}</button>
       <button class="btn" data-action="new-ms">+ ${esc(t('newMilestone'))}</button>
-      <button class="btn" data-action="backward">⇤ ${esc(t('backwardPlan'))}</button></div></div>
-      ${warn.length ? `<div class="banner"><strong>⚠ ${esc(t('slipping', { n: warn.length }))}</strong><span class="small" style="flex:1;min-width:200px">${warn.slice(0, 3).map(w => `${esc(w.m.title)} — ${esc(w.h.msg)}`).join(' · ')}</span><a class="btn small" href="#/projects/milestones">${esc(t('review'))}</a></div>` : ''}
+      <button class="btn" data-action="backward">${esc(t('backwardPlan'))}</button></div></div>
+      ${warn.length ? `<div class="banner"><strong>${esc(t('slipping', { n: warn.length }))}</strong><span class="small" style="flex:1;min-width:200px">${warn.slice(0, 3).map(w => `${esc(w.m.title)} — ${esc(w.h.msg)}`).join(' · ')}</span><a class="btn small" href="#/projects/milestones">${esc(t('review'))}</a></div>` : ''}
       <nav class="tabs">${tabs}</nav>`;
     const body = tab === 'list' ? this.list() : tab === 'roadmap' ? this.roadmap() : tab === 'milestones' ? this.milestones() : tab === 'deadlines' ? this.deadlines() : this.board();
     return head + body;
@@ -78,7 +78,7 @@ const ProjectsView = {
         const a = m.start || m.due, b = m.due || m.start;
         const bar = a === b ? `<span class="gdia s-${lvl}" style="left:${pos(b)}%" title="${esc(m.title)} · ${esc(fmtDate(b))}">◆</span>`
           : `<span class="gbar s-${lvl}" style="left:${pos(a)}%;width:${Math.max(0.8, pos(b) - pos(a))}%" title="${esc(m.title)} · ${esc(fmtDate(a))} → ${esc(fmtDate(b))} · ${Plan.progress(m)}%"><i style="width:${Plan.progress(m)}%"></i></span>`;
-        return `<div class="grow-row"><a class="glabel" href="#" data-action="edit-ms" data-id="${m.id}" title="${esc(m.title)}">${m.verify ? '⚠ ' : ''}${esc(m.title)}</a><div class="gtrack">${today}${bar}</div></div>`;
+        return `<div class="grow-row"><a class="glabel" href="#" data-action="edit-ms" data-id="${m.id}" title="${esc(m.title)}">${m.verify ? '' : ''}${esc(m.title)}</a><div class="gtrack">${today}${bar}</div></div>`;
       }).join('');
       const pd = p.deadline ? `<div class="grow-row"><span class="glabel faint">${esc(t('p_deadline'))}</span><div class="gtrack">${today}<span class="gdia s-late" style="left:${pos(p.deadline)}%" title="${esc(fmtDate(p.deadline))}">◆</span></div></div>` : '';
       return `<div class="gproj">${esc(p.title)} ${Plan.projectProgress(p.id) != null ? `<span class="small muted">· ${Plan.projectProgress(p.id)}%</span>` : ''}</div>${lines}${pd}`;
@@ -97,12 +97,12 @@ const ProjectsView = {
     return tmpl + groups.map(({ p, ms }) => `<div class="row" style="margin:16px 0 8px"><h2 style="margin:0">${esc(p.title)}</h2><span class="pill accent">${Plan.projectProgress(p.id)}%</span></div>
       <div class="table-wrap"><table><thead><tr><th>${esc(t('ms_title'))}</th><th class="hide-mobile">${esc(t('ms_dates'))}</th><th>${esc(t('ms_progress'))}</th><th>${esc(t('ms_health'))}</th><th></th></tr></thead><tbody>
       ${ms.map(m => { const h = Plan.health(m), pr = Plan.progress(m), deps = (m.dependsOn || []).map(id => (Store.get('milestones', id) || {}).title).filter(Boolean); const nT = Plan.msTasks(m).length;
-        return `<tr><td><strong>${esc(m.title)}</strong> ${m.verify ? `<button class="pill warn" data-action="verified" data-id="${m.id}" title="${esc(t('verifyHint'))}">⚠ ${esc(t('verify'))}</button>` : ''}
+        return `<tr><td><strong>${esc(m.title)}</strong> ${m.verify ? `<button class="pill warn" data-action="verified" data-id="${m.id}" title="${esc(t('verifyHint'))}">${esc(t('verify'))}</button>` : ''}
           ${deps.length ? `<div class="small faint">↳ ${esc(t('dependsOn'))}: ${deps.map(esc).join(', ')}</div>` : ''}${m.notes ? `<div class="small muted">${esc(m.notes)}</div>` : ''}</td>
         <td class="hide-mobile small" style="white-space:nowrap">${esc(fmtDate(m.start) || '—')}<br>→ ${esc(fmtDate(m.due) || '—')} ${m.due ? dueBadge(m.due) : ''}</td>
         <td style="min-width:110px"><div class="bar"><i style="width:${pr}%"></i></div><span class="small faint">${pr}%${nT ? ` · ${nT} ${esc(t('tasksW'))}` : ''}</span></td>
         <td><span class="pill ${HEALTH_PILL[h.level]}">${esc(t('lvl_' + h.level))}</span><div class="small faint">${esc(h.msg)}</div></td>
-        <td style="white-space:nowrap"><button class="btn ghost small" data-action="edit-ms" data-id="${m.id}">${esc(t('edit'))}</button><button class="btn ghost small" data-action="backward" data-ms="${m.id}" title="${esc(t('backwardPlan'))}">⇤</button></td></tr>`; }).join('')}
+        <td style="white-space:nowrap"><button class="btn ghost small" data-action="edit-ms" data-id="${m.id}">${esc(t('edit'))}</button><button class="btn ghost small" data-action="backward" data-ms="${m.id}" title="${esc(t('backwardPlan'))}">${icon('arrowLeft', 14)}</button></td></tr>`; }).join('')}
       </tbody></table></div>`).join('');
   },
 
@@ -111,7 +111,7 @@ const ProjectsView = {
     return `<div class="row" style="margin-bottom:10px"><span class="spacer"></span><button class="btn" data-action="new-deadline">+ ${esc(t('newDeadline'))}</button></div>
       ${D.length ? `<div class="table-wrap"><table><thead><tr><th>${esc(t('t_due'))}</th><th>${esc(t('p_title'))}</th><th>${esc(t('d_kind'))}</th><th></th></tr></thead><tbody>
         ${D.map(d => `<tr><td style="white-space:nowrap">${esc(fmtDate(d.due))} ${dueBadge(d.due)}</td><td>${d.url ? `<a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.title)}</a>` : esc(d.title)}${d.notes ? `<br><span class="small muted">${esc(d.notes)}</span>` : ''}</td>
-          <td><span class="pill">${esc(t('dk_' + d.kind))}</span></td><td style="white-space:nowrap"><button class="btn ghost small" data-action="edit-deadline" data-id="${d.id}">${esc(t('edit'))}</button><button class="btn ghost small" data-action="backward" data-dl="${d.id}" title="${esc(t('backwardPlan'))}">⇤</button></td></tr>`).join('')}
+          <td><span class="pill">${esc(t('dk_' + d.kind))}</span></td><td style="white-space:nowrap"><button class="btn ghost small" data-action="edit-deadline" data-id="${d.id}">${esc(t('edit'))}</button><button class="btn ghost small" data-action="backward" data-dl="${d.id}" title="${esc(t('backwardPlan'))}">${icon('arrowLeft', 14)}</button></td></tr>`).join('')}
       </tbody></table></div>` : `<div class="card empty">${esc(t('noDeadlines'))}</div>`}`;
   },
 
@@ -215,7 +215,7 @@ function milestoneModal(ms) {
       <label class="field span-all"><span>${esc(t('p_notes'))}</span><textarea id="mf-notes" rows="3">${esc(v.notes)}</textarea></label>
       <label class="row small span-all"><input type="checkbox" id="mf-verify" ${v.verify ? 'checked' : ''}> ${esc(t('verifyHint'))}</label>
     </div>`,
-    foot: `${ms ? `<button class="btn danger" id="mf-del">${esc(t('delete'))}</button><button class="btn" id="mf-back">⇤ ${esc(t('backwardPlan'))}</button><span class="spacer"></span>` : ''}<button class="btn" id="mf-cancel">${esc(t('cancel'))}</button><button class="btn primary" id="mf-save">${esc(t('save'))}</button>`,
+    foot: `${ms ? `<button class="btn danger" id="mf-del">${esc(t('delete'))}</button><button class="btn" id="mf-back">${esc(t('backwardPlan'))}</button><span class="spacer"></span>` : ''}<button class="btn" id="mf-cancel">${esc(t('cancel'))}</button><button class="btn primary" id="mf-save">${esc(t('save'))}</button>`,
   });
   const r = m.root, g = id => $('#' + id, r).value;
   $('#mf-pct', r).oninput = e => { $('#mf-pv', r).textContent = e.target.value + '%'; };

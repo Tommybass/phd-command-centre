@@ -139,10 +139,10 @@ function openSync() {
     body: `<p class="small muted">${esc(t('phoneSyncHelp'))}</p>
       <div class="card" style="box-shadow:none"><h3>① ${esc(t('getLatest'))}</h3>
         <p class="small muted">${esc(M.loadedAt ? t('lastLoaded', { t: ago(M.loadedAt), s: ago(M.snapshotSavedAt) }) : t('neverLoaded'))}</p>
-        <button class="btn primary" id="sy-load">⇣ ${esc(t('chooseDataFile'))}</button></div>
+        <button class="btn primary" id="sy-load">${esc(t('chooseDataFile'))}</button></div>
       <div class="card" style="box-shadow:none"><h3>② ${esc(t('sendChangesTitle'))}</h3>
         <p class="small muted">${esc(n ? t('pendingChanges', { n }) : t('noChanges'))}${M.lastSentAt ? ' · ' + esc(t('lastSent', { t: ago(M.lastSentAt) })) : ''}</p>
-        <button class="btn primary" id="sy-send" ${n ? '' : 'disabled'}>⇡ ${esc(t('sendChanges', { n }))}</button></div>
+        <button class="btn primary" id="sy-send" ${n ? '' : 'disabled'}>${esc(t('sendChanges', { n }))}</button></div>
       <p class="small faint">${esc(t('installHint'))}</p>`,
     foot: `<button class="btn" id="sy-close">${esc(t('close'))}</button>`,
   });
@@ -158,8 +158,8 @@ function openSync() {
 function phoneBanner() {
   if (!Sync.phone) return '';
   const M = Sync.meta, n = Sync.pending();
-  if (!M.loadedAt) return `<div class="banner info"><span style="flex:1;min-width:200px">📱 ${esc(t('phoneBannerFirst'))}</span><button class="btn primary" data-action="open-sync">${esc(t('getLatest'))}</button></div>`;
-  if (n) return `<div class="banner"><span style="flex:1;min-width:200px">⇡ ${esc(t('phoneBannerPending', { n }))}</span><button class="btn primary" data-action="open-sync">${esc(t('sendChanges', { n }))}</button></div>`;
+  if (!M.loadedAt) return `<div class="banner info"><span style="flex:1;min-width:200px">${esc(t('phoneBannerFirst'))}</span><button class="btn primary" data-action="open-sync">${esc(t('getLatest'))}</button></div>`;
+  if (n) return `<div class="banner"><span style="flex:1;min-width:200px">${esc(t('phoneBannerPending', { n }))}</span><button class="btn primary" data-action="open-sync">${esc(t('sendChanges', { n }))}</button></div>`;
   if (daysUntil(M.loadedAt.slice(0, 10)) < -1) return `<div class="banner"><span style="flex:1;min-width:200px">${esc(t('phoneBannerOld', { d: fmtDate(M.loadedAt.slice(0, 10)) }))}</span><button class="btn" data-action="open-sync">${esc(t('getLatest'))}</button></div>`;
   return '';
 }

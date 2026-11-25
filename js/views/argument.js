@@ -91,8 +91,8 @@ const ArgumentView = {
 
     return `<div class="page-head"><div><h1>${esc(t('nav_argument'))}</h1><p class="sub">${esc(t('argSub'))}</p></div><span class="spacer"></span>
         <div class="row"><button class="btn primary" data-action="add-root">+ ${esc(t('addMainClaim'))}</button>
-        <button class="btn ai" data-action="critique">✎ ${esc(t('copyCritique'))}</button>
-        <button class="btn small" data-action="export">⇩ Markdown</button></div></div>
+        <button class="btn ai" data-action="critique">${esc(t('copyCritique'))}</button>
+        <button class="btn small" data-action="export">Markdown</button></div></div>
       <div class="dash" style="margin-bottom:16px">
         <div class="card c4"><h2>${esc(t('argHealth'))}</h2><div class="row" style="gap:16px">
           <div><div class="stat" style="color:var(--ok)">${st.strong}</div><span class="small muted">${esc(t('as_strong'))}</span></div>
@@ -128,10 +128,10 @@ const ArgumentView = {
       </div>
       <h3 style="margin:16px 0 8px">${esc(t('evidence'))}</h3>
       ${(c.evidence || []).map((e, i) => { const why = Arg.shaky(e); return `<div class="ev-row">
-        <div class="grow"><span class="pill">${esc(t('lt_' + e.type))}</span> <a href="${Links.href(e)}">${esc(Links.label(e))}</a>${why ? `<div class="small" style="color:var(--warn)">⚠ ${esc(why)}</div>` : ''}
+        <div class="grow"><span class="pill">${esc(t('lt_' + e.type))}</span> <a href="${Links.href(e)}">${esc(Links.label(e))}</a>${why ? `<div class="small" style="color:var(--warn)">${esc(why)}</div>` : ''}
           <div class="grid g2" style="margin-top:6px"><input data-ev="${i}" data-evk="locator" value="${esc(e.locator)}" placeholder="${esc(t('locator'))}"><select data-ev="${i}" data-evk="strength">${options(STRENGTHS, e.strength, v => t('es_' + v))}</select>
           <input class="span-all" data-ev="${i}" data-evk="comment" value="${esc(e.comment)}" placeholder="${esc(t('evComment'))}"></div></div>
-        <button class="btn ghost small danger" data-action="del-ev" data-i="${i}" aria-label="${esc(t('delete'))}">✕</button></div>`; }).join('') || `<p class="empty">${esc(t('rsNoEvidence'))}</p>`}
+        <button class="btn ghost small danger" data-action="del-ev" data-i="${i}" aria-label="${esc(t('delete'))}">${icon('x', 14)}</button></div>`; }).join('') || `<p class="empty">${esc(t('rsNoEvidence'))}</p>`}
       <div class="grid g2" style="margin-top:8px">
         <select data-addev="source"><option value="">+ ${esc(t('addSourceEv'))}</option>${sources.map(x => `<option value="${x.id}">${esc(sourceLabel(x))} — ${esc((x.title || '').slice(0, 50))}</option>`).join('')}</select>
         <select data-addev="note"><option value="">+ ${esc(t('addNoteEv'))}</option>${notes.map(x => `<option value="${x.id}">${esc(fmtDate(x.date))} · ${esc(Links.noteTitle(x).slice(0, 60))}</option>`).join('')}</select>

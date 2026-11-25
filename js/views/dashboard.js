@@ -7,7 +7,7 @@ const DashboardView = {
       ${Store.fsSupported ? `<button class="btn" data-action="connect">${esc(t('connectFolder'))}</button>` : ''}</div>` : '';
     const storageWarn = Sync.phone ? phoneBanner() : !Store.isEmpty() && Store.dirState !== 'granted' ?`<div class="banner"><span style="flex:1;min-width:200px" class="small">${esc(Store.dirState === 'prompt' ? t('storageReconnect') : (Store.fsSupported ? t('storageBrowser') : t('noFsApi')))}</span>
       ${Store.dirState === 'prompt' ? `<button class="btn primary" data-action="reconnect">${esc(t('reconnect'))}</button>` : (Store.fsSupported ? `<button class="btn primary" data-action="connect">${esc(t('connectFolder'))}</button>` : '')}</div>` : '';
-    const reviewBanner = !Store.isEmpty() && weeklyReviewDue() ? `<div class="banner info"><span style="flex:1;min-width:200px">↺ ${esc(t('weeklyDue'))}</span><a class="btn primary" href="#/reviews/weekly">${esc(t('doReview'))}</a></div>` : '';
+    const reviewBanner = !Store.isEmpty() && weeklyReviewDue() ? `<div class="banner info"><span style="flex:1;min-width:200px">${esc(t('weeklyDue'))}</span><a class="btn primary" href="#/reviews/weekly">${esc(t('doReview'))}</a></div>` : '';
 
     // Top three
     const open = d.tasks.filter(x => !x.done);
@@ -17,7 +17,7 @@ const DashboardView = {
     const taskLi = (x, star) => `<li><input type="checkbox" class="check" data-action="done" data-id="${x.id}" ${x.done ? 'checked' : ''} aria-label="done">
       <div class="grow"><span class="${x.done ? 'done-text' : ''}">${esc(x.title)}</span>
         <div class="row small muted">${x.energy ? `<span class="pill">${esc(t('en_' + x.energy))}</span>` : ''}${x.projectId ? `<span>${esc(projectName(x.projectId))}</span>` : ''}${x.due ? `<span>${esc(fmtDate(x.due, { day: 'numeric', month: 'short' }))}</span> ${dueBadge(x.due)}` : ''}</div></div>
-      ${star ? `<button class="star ${x.top ? 'on' : ''}" data-action="star" data-id="${x.id}" title="${esc(t('t_top'))}">★</button>` : ''}</li>`;
+      ${star ? `<button class="star ${x.top ? 'on' : ''}" data-action="star" data-id="${x.id}" title="${esc(t('t_top'))}">${icon('star', 15)}</button>` : ''}</li>`;
     const topCard = `<div class="card c7"><h2>${esc(t('top3'))} <span class="count">${top.length}/3</span></h2>
       <ul class="list">${top.map(x => taskLi(x, true)).join('')}${doneToday.map(x => taskLi(x, false)).join('')}</ul>
       ${top.length < 3 ? `<p class="small muted" style="margin:8px 0 4px">${esc(t('pickTop'))}</p>` : ''}
@@ -52,7 +52,7 @@ const DashboardView = {
 
     // Writing
     const ws = Plan.streaks();
-    const hours = `<div class="card c4"><h2><a href="#/writing" style="color:inherit">${esc(t('nav_writing'))}</a></h2>
+    const hours = `<div class="card c3"><h2><a href="#/writing" style="color:inherit">${esc(t('nav_writing'))}</a></h2>
       <div class="row" style="gap:20px"><div><div class="stat">${ws.current}</div><span class="small muted">${esc(t('streakDays'))}</span></div><div><div class="stat">${Plan.weekWords().toLocaleString()}</div><span class="small muted">${esc(t('wordsThisWeek'))}</span></div></div>
       <ul class="list small" style="margin-top:8px">${d.projects.filter(p => p.wordGoal > 0).slice(0, 3).map(p => `<li><div class="grow"><div class="row"><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(p.title)}</span><span class="faint">${Math.min(100, Math.round((p.wordCount || 0) / p.wordGoal * 100))}%</span></div><div class="bar"><i style="width:${Math.min(100, (p.wordCount || 0) / p.wordGoal * 100)}%"></i></div></div></li>`).join('')}</ul>
       </div>`;
@@ -61,7 +61,7 @@ const DashboardView = {
     const cap = Cal.capacity();
     const todayMin = d.timeLogs.filter(l => l.start.slice(0, 10) === todayISO()).reduce((s, l) => s + l.minutes, 0);
     const byArea = {}; d.timeLogs.filter(l => l.start.slice(0, 10) >= startOfWeek()).forEach(l => byArea[l.area] = (byArea[l.area] || 0) + l.minutes);
-    const timeCard = `<div class="card c6"><h2><a href="#/calendar/time" style="color:inherit">${esc(t('hours'))}</a> <button class="btn small" data-action="timer">▶ ${esc(t('focus'))}</button></h2>
+    const timeCard = `<div class="card c7"><h2><a href="#/calendar/time" style="color:inherit">${esc(t('hours'))}</a> <button class="btn small" data-action="timer">${icon('play', 14)} ${esc(t('focus'))}</button></h2>
       <div class="row" style="gap:20px"><div><div class="stat">${(todayMin / 60).toFixed(1)}<small> h</small></div><span class="small muted">${esc(t('today'))}</span></div><div><div class="stat">${cap.logged.toFixed(1)}<small> h</small></div><span class="small muted">${esc(t('thisWeek'))}</span></div></div>
       <div class="chip-row" style="margin:8px 0">${Object.entries(byArea).sort((a, b) => b[1] - a[1]).map(([a, m]) => `<span class="pill">${esc(t('area_' + a))} ${(m / 60).toFixed(1)} h</span>`).join('')}</div>
       <a href="#/calendar/week" style="color:inherit">${capacityBar(cap)}</a></div>`;
@@ -69,9 +69,9 @@ const DashboardView = {
     // Meetings: next meeting and open action items
     const nextMeet = d.meetings.filter(m => m.date >= todayISO()).sort((a, b) => a.date.localeCompare(b.date))[0];
     const openActs = d.meetings.flatMap(m => (m.actions || []).map(a => ({ m, a }))).filter(x => !actionDone(x.a));
-    const meetCard = `<div class="card c6"><h2><a href="#/meetings" style="color:inherit">${esc(t('nav_meetings'))}</a></h2>
+    const meetCard = `<div class="card c5"><h2><a href="#/meetings" style="color:inherit">${esc(t('nav_meetings'))}</a></h2>
       ${nextMeet ? `<p><strong>${esc(meetingTitle(nextMeet))}</strong><br><span class="small muted">${esc(fmtDate(nextMeet.date, { weekday: 'long', day: 'numeric', month: 'long' }))} · ${esc(nextMeet.time || '')}</span> ${dueBadge(nextMeet.date)}</p>
-        <div class="row"><a class="btn small" href="#/meetings/${nextMeet.id}">${esc(t('agenda'))} (${(nextMeet.agenda || []).length})</a><button class="btn small ai" data-action="pu" data-id="${nextMeet.id}">✦ ${esc(t('progressUpdate'))}</button></div>`
+        <div class="row"><a class="btn small" href="#/meetings/${nextMeet.id}">${esc(t('agenda'))} (${(nextMeet.agenda || []).length})</a><button class="btn small ai" data-action="pu" data-id="${nextMeet.id}">${esc(t('progressUpdate'))}</button></div>`
         : `<p class="small muted">${esc(t('noUpcoming'))}</p>`}
       ${openActs.length ? `<h3 class="small muted" style="margin-top:12px">${esc(t('allOpenActions'))} (${openActs.length})</h3><ul class="list small">${openActs.slice(0, 4).map(x => `<li><span class="pill ${x.a.owner === 'me' ? 'accent' : ''}">${esc(ownerLabel(x.a.owner))}</span><span class="grow">${esc(x.a.text)}</span>${x.a.due ? dueBadge(x.a.due) : ''}</li>`).join('')}</ul>` : ''}</div>`;
 
@@ -80,9 +80,9 @@ const DashboardView = {
     const tp = thesis ? Plan.projectProgress(thesis.id) : null;
     const nextMs = d.milestones.filter(m => m.status !== 'done' && m.due).sort((a, b) => a.due.localeCompare(b.due)).slice(0, 3);
     const warns = Plan.warnings();
-    const pipeline = `<div class="card c4"><h2><a href="#/projects/milestones" style="color:inherit">${esc(t('roadmapCard'))}</a></h2>
+    const pipeline = `<div class="card c5"><h2><a href="#/projects/milestones" style="color:inherit">${esc(t('roadmapCard'))}</a></h2>
       ${tp != null ? `<div class="stat">${tp}<small>%</small></div><div class="bar" style="margin:6px 0 10px"><i style="width:${tp}%"></i></div>` : `<p class="small muted">${esc(t('noRoadmap'))} <a href="#/projects/milestones">${esc(t('tmplAdd'))}</a></p>`}
-      ${warns.length ? `<p class="small" style="color:var(--danger);margin-bottom:4px">⚠ ${esc(t('slipping', { n: warns.length }))}</p>` : ''}
+      ${warns.length ? `<p class="small" style="color:var(--danger);margin-bottom:4px">${esc(t('slipping', { n: warns.length }))}</p>` : ''}
       <ul class="list small">${nextMs.map(m => { const h = Plan.health(m); return `<li><div class="grow">${esc(m.title)}<div class="faint">${esc(fmtDate(m.due))} · ${Plan.progress(m)}%</div></div>${h.level !== 'ok' ? `<span class="pill ${HEALTH_PILL[h.level]}">${esc(t('lvl_' + h.level))}</span>` : dueBadge(m.due)}</li>`; }).join('')}</ul></div>`;
 
     const NA = d.projects.slice().sort((a, b) => AREAS.indexOf(a.area) - AREAS.indexOf(b.area));
@@ -91,11 +91,11 @@ const DashboardView = {
 
     const nInbox = d.notes.filter(n => n.kind === 'inbox').length;
     const notes = d.notes.slice().sort((a, b) => (b.date || '').localeCompare(a.date || '') || b.createdAt.localeCompare(a.createdAt)).slice(0, 5);
-    const inbox = `<div class="card c6"><h2><a href="#/journal" style="color:inherit">${esc(t('journalRecent'))}</a> ${nInbox ? `<a class="pill warn" href="#/journal" data-action="inbox-filter">${nInbox} ${esc(t('nk_inbox'))}</a>` : ''}</h2>
+    const inbox = `<div class="card c7"><h2><a href="#/journal" style="color:inherit">${esc(t('journalRecent'))}</a> ${nInbox ? `<a class="pill warn" href="#/journal" data-action="inbox-filter">${nInbox} ${esc(t('nk_inbox'))}</a>` : ''}</h2>
       ${notes.length ? `<ul class="list small">${notes.map(n => `<li><span class="kind-ico k-${n.kind}">${KIND_ICON[n.kind]}</span><div class="grow"><a href="#/journal/${n.id}" style="color:var(--text)">${esc(Links.noteTitle(n))}</a><div class="faint">${esc(t('nk_' + n.kind))} · ${esc(fmtDate(n.date))}</div></div></li>`).join('')}</ul>` : `<p class="empty">${esc(t('noEntries'))}</p>`}</div>`;
     const C = d.claims;
     const cs = { strong: 0, thin: 0, missing: 0 }; C.forEach(c => cs[Arg.status(c)]++);
-    const argCard = `<div class="card c6"><h2><a href="#/argument" style="color:inherit">${esc(t('argHealth'))}</a></h2>
+    const argCard = `<div class="card c5"><h2><a href="#/argument" style="color:inherit">${esc(t('argHealth'))}</a></h2>
       ${C.length ? `<div class="row" style="gap:18px;margin-bottom:8px"><span><span class="sdot s-strong"></span> ${cs.strong} ${esc(t('as_strong'))}</span><span><span class="sdot s-thin"></span> ${cs.thin} ${esc(t('as_thin'))}</span><span><span class="sdot s-missing"></span> ${cs.missing} ${esc(t('as_missing'))}</span></div>
         <div class="bar" style="display:flex"><i style="width:${cs.strong / C.length * 100}%;background:var(--ok);border-radius:0"></i><i style="width:${cs.thin / C.length * 100}%;background:var(--warn);border-radius:0"></i></div>
         <ul class="list small" style="margin-top:8px">${C.filter(c => Arg.status(c) === 'missing').slice(0, 3).map(c => `<li><span class="sdot s-missing"></span><a class="grow" href="#/argument/${c.id}" style="color:var(--text)">${esc(c.text.slice(0, 90))}</a></li>`).join('')}</ul>`
@@ -106,10 +106,10 @@ const DashboardView = {
     const due = SRS.queue('').length;
     const unclaimed = d.records.filter(r => r.kind === 'receipt' && r.rstatus === 'notclaimed');
     const checks = d.records.filter(r => r.kind === 'check');
-    const studyCard = `<div class="card c6"><h2><a href="#/cards" style="color:inherit">${esc(t('nav_cards'))}</a></h2>
+    const studyCard = `<div class="card c5"><h2><a href="#/cards" style="color:inherit">${esc(t('nav_cards'))}</a></h2>
       ${d.cards.length ? `<div class="row"><div class="stat">${due}</div><span class="small muted">${esc(t('cardsDue', { n: due }).replace(/^\d+\s*/, ''))}</span><span class="spacer"></span>${due ? `<a class="btn primary" href="#/cards/review">${esc(t('studyNow'))}</a>` : '✓'}</div>` : `<p class="small muted">${esc(t('noCards'))} <a href="#/cards/make">${esc(t('ct2_make'))}</a></p>`}
-      <a href="#/reviews/weekly" class="small" style="display:block;margin-top:10px">↺ ${esc(t('rvt_weekly'))}${d.reviews.some(r => r.kind === 'weekly' && r.period === startOfWeek()) ? ' ✓' : ''}</a></div>`;
-    const adminCard = `<div class="card c6"><h2><a href="#/records" style="color:inherit">${esc(t('adminCard'))}</a></h2><ul class="list small">
+      <a href="#/reviews/weekly" class="small" style="display:block;margin-top:10px">${esc(t('rvt_weekly'))}${d.reviews.some(r => r.kind === 'weekly' && r.period === startOfWeek()) ? ' ✓' : ''}</a></div>`;
+    const adminCard = `<div class="card c7"><h2><a href="#/records" style="color:inherit">${esc(t('adminCard'))}</a></h2><ul class="list small">
       ${checks.length ? `<li><span class="grow">${esc(t('ethicsProgress'))}</span><span>${checks.filter(c => c.done).length}/${checks.length}</span></li>` : `<li><a href="#/records/ethics">${esc(t('ethicsTmplTitle'))} →</a></li>`}
       ${unclaimed.length ? `<li><a class="grow" href="#/records/receipts">${esc(t('receiptsUnclaimed', { n: unclaimed.length, a: unclaimed.reduce((s, r) => s + (Number(r.amount) || 0), 0).toFixed(2) }))}</a></li>` : ''}
       ${d.records.filter(r => r.kind === 'contract' && (!r.end || r.end >= todayISO())).map(c => { const used = d.records.filter(h => h.kind === 'hours' && h.contractId === c.id).reduce((s, h) => s + Number(h.hours || 0), 0); return `<li><span class="grow">${esc(c.role)}: ${esc(c.title)}</span><span class="${c.hoursCap && used > c.hoursCap * 0.9 ? 'warn-text' : ''}">${used.toFixed(1)}${c.hoursCap ? ' / ' + c.hoursCap : ''} h</span></li>`; }).join('')}

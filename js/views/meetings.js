@@ -7,7 +7,7 @@ const MeetingsView = {
     const list = M.map(m => {
       const open = (m.actions || []).filter(a => !actionDone(a)).length;
       const upcoming = m.date >= todayISO();
-      return `<a class="feed-item ${m.id === id ? 'sel' : ''}" href="#/meetings/${m.id}"><span class="kind-ico ${upcoming ? 'k-idea' : 'k-feedback'}">${upcoming ? '◷' : '✓'}</span>
+      return `<a class="feed-item ${m.id === id ? 'sel' : ''}" href="#/meetings/${m.id}"><span class="kind-ico ${upcoming ? 'k-idea' : 'k-feedback'}">${upcoming ? icon('clock', 14) : icon('check', 14)}</span>
         <span class="grow"><strong class="ft">${esc(meetingTitle(m))}</strong><span class="small muted">${esc(fmtDate(m.date, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }))} · ${esc(m.time || '')}${m.projectId ? ' · ' + esc(projectName(m.projectId)) : ''}</span>
         ${open ? `<span class="row small"><span class="pill warn">${open} ${esc(t('openActions'))}</span></span>` : ''}</span></a>`;
     }).join('');
@@ -25,7 +25,7 @@ const MeetingsView = {
     const people = uniq(Store.all('meetings').flatMap(x => (x.with || '').split(/[;,]/).map(s => s.trim())).filter(Boolean));
     return `<div class="card">
       <div class="row" style="margin-bottom:10px"><a class="btn ghost small show-mobile" href="#/meetings">← ${esc(t('back'))}</a><span class="spacer"></span>
-        <button class="btn ai" data-action="progress">✦ ${esc(t('progressUpdate'))}</button><button class="btn ghost small danger" data-action="del">${esc(t('delete'))}</button></div>
+        <button class="btn ai" data-action="progress">${esc(t('progressUpdate'))}</button><button class="btn ghost small danger" data-action="del">${esc(t('delete'))}</button></div>
       <div class="grid g4">
         <label class="field"><span>${esc(t('d_kind'))}</span><select data-mf="kind">${options(MEETING_KINDS, m.kind, k => t('mk_' + k))}</select></label>
         <label class="field span2"><span>${esc(t('with'))}</span><input data-mf="with" value="${esc(m.with)}" list="mt-people" placeholder="${esc(t('withHint'))}"><datalist id="mt-people">${people.map(p => `<option value="${esc(p)}">`).join('')}</datalist></label>
@@ -36,9 +36,9 @@ const MeetingsView = {
         <label class="field"><span>${esc(t('nextMeeting'))}</span><input type="date" data-mf="nextDate" value="${esc(m.nextDate)}"></label>
       </div>
 
-      <h3 class="sec-h">${esc(t('agenda'))} <button class="btn small" data-action="suggest-agenda">✦ ${esc(t('suggestAgenda'))}</button></h3>
+      <h3 class="sec-h">${esc(t('agenda'))} <button class="btn small" data-action="suggest-agenda">${esc(t('suggestAgenda'))}</button></h3>
       <ul class="list agenda">${(m.agenda || []).map((a, i) => `<li><input type="checkbox" class="check" data-ag="${i}" data-agk="done" ${a.done ? 'checked' : ''} aria-label="${esc(t('covered'))}"><input class="grow inline-input ${a.done ? 'done-text' : ''}" data-ag="${i}" data-agk="text" value="${esc(a.text)}">
-        <button class="btn ghost small" data-action="ag-up" data-i="${i}" aria-label="${esc(t('moveUp'))}">↑</button><button class="btn ghost small danger" data-action="ag-del" data-i="${i}" aria-label="${esc(t('delete'))}">✕</button></li>`).join('')}</ul>
+        <button class="btn ghost small" data-action="ag-up" data-i="${i}" aria-label="${esc(t('moveUp'))}">↑</button><button class="btn ghost small danger" data-action="ag-del" data-i="${i}" aria-label="${esc(t('delete'))}">${icon('x', 14)}</button></li>`).join('')}</ul>
       <form class="row" data-form="agenda"><input name="text" placeholder="${esc(t('addAgenda'))}" style="flex:1"><button class="btn">+</button></form>
 
       <h3 class="sec-h">${esc(t('meetingNotes'))}</h3>
@@ -47,14 +47,14 @@ const MeetingsView = {
       <h3 class="sec-h">${esc(t('decisions'))}</h3>
       <ul class="list">${(m.decisions || []).map((dc, i) => `<li><span class="kind-ico k-decision">⚖</span><input class="grow inline-input" data-dec="${i}" value="${esc(dc.text)}">
         ${dc.noteId ? `<a class="pill ok" href="#/journal/${dc.noteId}">${esc(t('inLog'))}</a>` : `<button class="btn small" data-action="dec-log" data-i="${i}">→ ${esc(t('jt_decisions'))}</button>`}
-        <button class="btn ghost small danger" data-action="dec-del" data-i="${i}" aria-label="${esc(t('delete'))}">✕</button></li>`).join('')}</ul>
+        <button class="btn ghost small danger" data-action="dec-del" data-i="${i}" aria-label="${esc(t('delete'))}">${icon('x', 14)}</button></li>`).join('')}</ul>
       <form class="row" data-form="decision"><input name="text" placeholder="${esc(t('addDecision'))}" style="flex:1"><button class="btn">+</button></form>
 
       <h3 class="sec-h">${esc(t('actionItems'))}</h3>
       <div class="table-wrap"><table><thead><tr><th></th><th>${esc(t('action'))}</th><th>${esc(t('owner'))}</th><th>${esc(t('t_due'))}</th><th></th></tr></thead><tbody>
       ${(m.actions || []).map((a, i) => `<tr><td><input type="checkbox" data-act="${i}" data-actk="done" ${actionDone(a) ? 'checked' : ''}></td><td><input class="inline-input ${actionDone(a) ? 'done-text' : ''}" data-act="${i}" data-actk="text" value="${esc(a.text)}"></td>
         <td><input class="inline-input" data-act="${i}" data-actk="owner" value="${esc(ownerLabel(a.owner))}" list="mt-owners" style="min-width:90px"></td><td><input type="date" data-act="${i}" data-actk="due" value="${esc(a.due)}"></td>
-        <td style="white-space:nowrap">${a.taskId ? `<span class="pill accent" title="${esc(t('linkedTask'))}">✓ ${esc(t('qa_task'))}</span>` : ''}<button class="btn ghost small danger" data-action="act-del" data-i="${i}" aria-label="${esc(t('delete'))}">✕</button></td></tr>`).join('')}
+        <td style="white-space:nowrap">${a.taskId ? `<span class="pill accent" title="${esc(t('linkedTask'))}">✓ ${esc(t('qa_task'))}</span>` : ''}<button class="btn ghost small danger" data-action="act-del" data-i="${i}" aria-label="${esc(t('delete'))}">${icon('x', 14)}</button></td></tr>`).join('')}
       </tbody></table></div><datalist id="mt-owners"><option value="${esc(t('ownerMe'))}">${people.map(p => `<option value="${esc(p)}">`).join('')}</datalist>
       <form class="row" data-form="action" style="margin-top:8px"><input name="text" placeholder="${esc(t('addAction'))}" style="flex:2;min-width:180px"><input name="owner" list="mt-owners" value="${esc(t('ownerMe'))}" style="flex:1;min-width:100px"><input type="date" name="due" style="width:auto"><button class="btn">+</button></form>
       <p class="small faint">${esc(t('actionHint'))}</p>
@@ -198,7 +198,7 @@ function progressModal(m) {
   const md = modal({
     title: t('progressUpdate'), wide: true,
     body: `<p class="small muted">${esc(t('puHelp'))}</p><textarea id="pu-text" class="prompt-box" rows="18">${esc(text)}</textarea>`,
-    foot: `<button class="btn ai" id="pu-prompt">✎ ${esc(t('puPrompt'))}</button><span class="spacer"></span><button class="btn" id="pu-dl">⇩ .md</button><button class="btn" id="pu-copy">${esc(t('copy'))}</button><button class="btn primary" id="pu-save">${esc(t('puSave'))}</button>`,
+    foot: `<button class="btn ai" id="pu-prompt">${esc(t('puPrompt'))}</button><span class="spacer"></span><button class="btn" id="pu-dl">.md</button><button class="btn" id="pu-copy">${esc(t('copy'))}</button><button class="btn primary" id="pu-save">${esc(t('puSave'))}</button>`,
   });
   const r = md.root, val = () => $('#pu-text', r).value;
   $('#pu-copy', r).onclick = () => copyText(val());

@@ -15,7 +15,7 @@ function passDots(s) {
   return h + '</span>';
 }
 function prioDots(p) { p = Number(p) || 1; return `<span class="prio" title="${esc(t('prio_' + p))}">${'●'.repeat(p)}<span class="o">${'●'.repeat(3 - p)}</span></span>`; }
-function aiPill(s) { const n = (s.aiDrafted || []).length; return n ? `<span class="pill ai" title="${esc(t('aiFieldsLeft', { n }))}">✎ ${n}</span>` : ''; }
+function aiPill(s) { const n = (s.aiDrafted || []).length; return n ? `<span class="pill ai" title="${esc(t('aiFieldsLeft', { n }))}">${esc(t('aiDraft'))} · ${n}</span>` : ''; }
 
 const LibraryView = {
   render(params, query) {
@@ -28,7 +28,7 @@ const LibraryView = {
       <span class="spacer"></span>
       <div class="row">
         <button class="btn" data-action="lib-new">+ ${esc(t('addSource'))}</button>
-        <button class="btn ai" data-action="ai-source">✎ ${esc(t('pasteAbstract'))}</button>
+        <button class="btn ai" data-action="ai-source">${esc(t('pasteAbstract'))}</button>
         <button class="btn" data-action="lib-import">${esc(t('importZotero'))}</button>
       </div></div>
       <nav class="tabs">${tabs}</nav>`;
@@ -103,8 +103,8 @@ const LibraryView = {
       <select data-filter="matrixProject"><option value="">${esc(t('anyProject'))}</option>${options(projects.map(p => p.id), LibState.matrixProject, projectName)}</select>
       <button class="btn" data-action="theme-add">+ ${esc(t('addTheme'))}</button>
       <span class="spacer"></span>
-      <button class="btn ai" data-action="connections">✎ ${esc(t('connections'))}</button>
-      <button class="btn ai" data-action="outline">✎ ${esc(t('copyOutline'))}</button>
+      <button class="btn ai" data-action="connections">${esc(t('connections'))}</button>
+      <button class="btn ai" data-action="outline">${esc(t('copyOutline'))}</button>
     </div><p class="muted small">${esc(t('matrixHint'))}</p>`;
     if (!themes.length) return tools + `<div class="card empty">${esc(t('noThemes'))}</div>`;
     const head = themes.map(th => `<th><div class="th-theme"><span><span class="kind">${esc(t('kind_' + (th.kind || 'theme')))}</span>${esc(th.name)}</span>
@@ -258,7 +258,7 @@ function connectionsModal() {
     body: `<p class="muted small">${esc(t('connHelp'))}</p>
       ${list.length ? `<ul class="list">${list.map((c, i) => `<li><div class="grow"><strong>${esc(sourceLabel(c.a))}</strong> ↔ <strong>${esc(sourceLabel(c.b))}</strong><br><span class="small muted">${c.why.map(esc).join(' · ')}</span></div>
         <button class="btn small" data-link="${i}">${esc(t('link'))}</button></li>`).join('')}</ul>` : `<p class="empty">${esc(t('noConn'))}</p>`}`,
-    foot: `<button class="btn ai" id="cn-prompt">✎ ${esc(t('connPrompt'))}</button><span class="spacer"></span><button class="btn" data-close2>${esc(t('close'))}</button>`,
+    foot: `<button class="btn ai" id="cn-prompt">${esc(t('connPrompt'))}</button><span class="spacer"></span><button class="btn" data-close2>${esc(t('close'))}</button>`,
   });
   m.root.querySelector('[data-close2]').onclick = () => { m.close(); App.render(); };
   m.root.addEventListener('click', e => {

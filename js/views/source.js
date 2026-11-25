@@ -4,7 +4,7 @@ const SourceView = {
     const s = Store.get('sources', params[0]);
     if (!s) return `<div class="card empty">Source not found. <a href="#/library/all">${esc(t('back'))}</a></div>`;
     const ai = new Set(s.aiDrafted || []);
-    const badge = k => ai.has(k) ? `<span class="ai-badge">✎ ${esc(t('aiDraft'))}<button type="button" data-action="confirm" data-k="${k}">${esc(t('confirm'))}</button></span>` : '';
+    const badge = k => ai.has(k) ? `<span class="ai-badge">${esc(t('aiDraft'))}<button type="button" data-action="confirm" data-k="${k}">${esc(t('confirm'))}</button></span>` : '';
     const F = (k, label, inner, cls = '') => `<label class="field ${ai.has(k) ? 'is-ai' : ''} ${cls}"><span>${esc(label)} ${badge(k)}</span>${inner}</label>`;
     const txt = (k, label, cls = '', type = 'text', extra = '') => F(k, label, `<input type="${type}" data-field="${k}" value="${esc(s[k])}" ${extra}>`, cls);
     const area = (k, label, rows = 3, cls = 'span-all') => F(k, label, `<textarea data-field="${k}" rows="${rows}">${esc(s[k])}</textarea>`, cls);
@@ -53,10 +53,10 @@ const SourceView = {
       ${(s.quotes || []).map((q, i) => `<div class="quote-row">
         <div><textarea data-quote="${i}" data-q="text" rows="2" placeholder="${esc(t('quoteText'))}">${esc(q.text)}</textarea>
           <input data-quote="${i}" data-q="note" value="${esc(q.note)}" placeholder="${esc(t('quoteNote'))}" style="margin-top:4px">
-          ${q.ai && q.verified === false ? `<div class="small" style="color:var(--danger)">⚠ ${esc(t('notInText'))}</div>` : ''}</div>
+          ${q.ai && q.verified === false ? `<div class="small" style="color:var(--danger)">${esc(t('notInText'))}</div>` : ''}</div>
         <div><input data-quote="${i}" data-q="page" value="${esc(q.page)}" placeholder="p." aria-label="${esc(t('page'))}">
           ${!q.page ? `<div class="small" style="color:var(--warn)">${esc(t('pageMissing'))}</div>` : ''}</div>
-        <button type="button" class="btn ghost small danger" data-action="del-quote" data-i="${i}" aria-label="${esc(t('delete'))}">✕</button>
+        <button type="button" class="btn ghost small danger" data-action="del-quote" data-i="${i}" aria-label="${esc(t('delete'))}">${icon('x', 14)}</button>
       </div>`).join('')}
       <button type="button" class="btn small" data-action="add-quote">+ ${esc(t('addQuote'))}</button>
     </section>`;
@@ -69,7 +69,7 @@ const SourceView = {
     const links = `<section class="card section"><h2>${esc(t('sec_links'))}</h2><div class="grid">
       ${list('tags', t('f_tags'), t('f_tagsHint'))}
       <div class="field"><span class="small muted">${esc(t('f_related'))}</span>
-        <div class="chip-row" style="margin:4px 0 8px">${(s.related || []).map(id => { const r = Store.get('sources', id); return r ? `<span class="chip on"><a href="#/source/${r.id}">${esc(sourceLabel(r))}</a> <button type="button" class="star" data-action="unrelate" data-id="${r.id}" aria-label="remove">✕</button></span>` : ''; }).join('')}</div>
+        <div class="chip-row" style="margin:4px 0 8px">${(s.related || []).map(id => { const r = Store.get('sources', id); return r ? `<span class="chip on"><a href="#/source/${r.id}">${esc(sourceLabel(r))}</a> <button type="button" class="star" data-action="unrelate" data-id="${r.id}" aria-label="remove">${icon('x', 14)}</button></span>` : ''; }).join('')}</div>
         <select data-action-change="relate"><option value="">${esc(t('addRelated'))}</option>${others.map(o => `<option value="${o.id}">${esc(sourceLabel(o))} — ${esc((o.title || '').slice(0, 60))}</option>`).join('')}</select>
       </div></div></section>`;
 
@@ -89,7 +89,7 @@ const SourceView = {
       <div class="card"><h2>${esc(t('apa7'))}</h2><div class="apa-preview" id="apa-preview">${Cite.apa(s)}</div>
         <div class="row" style="margin-top:8px"><button class="btn small" data-action="copy-apa">${esc(t('copy'))}</button>
         ${Cite.link(s) ? `<a class="btn small" href="${esc(Cite.link(s))}" target="_blank" rel="noopener">↗ ${esc(Cite.doi(s.doi) ? 'DOI' : 'URL')}</a>` : ''}</div></div>
-      ${nAi ? `<div class="card" style="border-color:var(--ai)"><p class="small" style="color:var(--ai)"><strong>✎ ${esc(t('aiFieldsLeft', { n: nAi }))}</strong></p><button class="btn small ai" data-action="confirm-all">${esc(t('confirmAll'))}</button></div>` : ''}
+      ${nAi ? `<div class="card" style="border-color:var(--ai)"><p class="small" style="color:var(--ai)"><strong>${esc(t('aiFieldsLeft', { n: nAi }))}</strong></p><button class="btn small ai" data-action="confirm-all">${esc(t('confirmAll'))}</button></div>` : ''}
       <div class="card"><h2>${esc(t('sec_reading'))}</h2>
         <div class="grid g2">
           <label class="field"><span>${esc(t('f_priority'))}</span><select data-field="priority" data-num>${options([3, 2, 1], s.priority, v => t('prio_' + v))}</select></label>
@@ -104,7 +104,7 @@ const SourceView = {
     </aside>`;
 
     return `<div class="page-head"><a class="btn ghost" href="#/library/queue">← ${esc(t('back'))}</a><div style="min-width:0"><h1>${esc(sourceLabel(s))}</h1><p class="sub">${esc(s.title)}</p></div><span class="spacer"></span>
-        <button class="btn ai" data-action="ai-fill">✎ ${esc(t('pasteAbstract'))}</button>
+        <button class="btn ai" data-action="ai-fill">${esc(t('pasteAbstract'))}</button>
         <button class="btn danger" data-action="delete">${esc(t('delete'))}</button></div>
       <div class="detail"><div>${reference}${reading}${analysis}${quotes}${critique}${links}${matrix}</div>${aside}</div>`;
   },

@@ -195,9 +195,9 @@ const Timer = {
     const btn = $('#timer-btn'); if (!btn) return;
     const paint = () => {
       const s = this.state;
-      if (!s) { btn.classList.remove('running'); btn.innerHTML = `▶ <span class="hide-sm">${esc(t('focus'))}</span>`; document.title = 'PhD Command Centre'; return; }
+      if (!s) { btn.classList.remove('running'); btn.innerHTML = `${icon('play', 14)} <span class="hide-sm">${esc(t('focus'))}</span>`; document.title = 'PhD Command Centre'; return; }
       const name = s.taskId ? (Store.get('tasks', s.taskId) || {}).title : projectName(s.projectId) || t('area_' + s.area);
-      btn.classList.add('running'); btn.innerHTML = `■ <b>${this.label()}</b> <span class="hide-sm timer-name">${esc((name || '').slice(0, 28))}</span>`;
+      btn.classList.add('running'); btn.innerHTML = `${icon('stop', 14)} <b>${this.label()}</b> <span class="hide-sm timer-name">${esc((name || '').slice(0, 28))}</span>`;
       document.title = `${this.label()} · ${name || 'Focus'}`;
       if (s.planMin && !this.alerted && this.elapsedMin() >= s.planMin) {
         this.alerted = true; toast(t('timerDone'), 6000); beep();
@@ -242,7 +242,7 @@ function openTimer() {
       <label class="field"><span>${esc(t('p_area'))}</span><select id="tm-area">${options(AREAS, 'thesis', a => t('area_' + a))}</select></label>
       <div class="field span-all"><span class="small muted">${esc(t('duration'))}</span><div class="chip-row" style="margin-top:4px">${[25, 50, 90, 0].map((n, i) => `<button type="button" class="chip ${i === 0 ? 'on' : ''}" data-min="${n}">${n ? n + ' min' : esc(t('openEnded'))}</button>`).join('')}</div></div>
     </div>`,
-    foot: `<button class="btn" id="tm-cancel">${esc(t('cancel'))}</button><button class="btn primary" id="tm-start">▶ ${esc(t('start'))}</button>`,
+    foot: `<button class="btn" id="tm-cancel">${esc(t('cancel'))}</button><button class="btn primary" id="tm-start">${esc(t('start'))}</button>`,
   });
   const r = m.root; let plan = 25;
   r.querySelectorAll('[data-min]').forEach(b => b.onclick = () => { plan = Number(b.dataset.min); r.querySelectorAll('[data-min]').forEach(x => x.classList.toggle('on', x === b)); });

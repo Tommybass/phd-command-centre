@@ -16,7 +16,7 @@ function openQuickAdd(kind = 'task') {
       <label class="field"><span>${esc(t('f_priority'))}</span><select name="priority">${options([3, 2, 1], 2, v => t('prio_' + v))}</select></label></div>
       <input name="doi" placeholder="DOI / URL">
       <label class="field"><span>${esc(t('t_project'))}</span>${projSel}</label>
-      <button type="button" class="btn ai" data-ai>✎ ${esc(t('pasteAbstract'))}</button>`,
+      <button type="button" class="btn ai" data-ai>${esc(t('pasteAbstract'))}</button>`,
     note: `<textarea name="text" rows="5" placeholder="${esc(t('noteText'))}" autofocus></textarea>
       <div class="grid g2"><label class="field"><span>${esc(t('f_type'))}</span><select name="kind">${options(NOTE_KINDS, 'inbox', k => t('nk_' + k))}</select></label>
       <label class="field"><span>${esc(t('t_project'))}</span>${projSel}</label></div>`,
@@ -74,7 +74,7 @@ function searchIndex() {
   Store.all('notes').forEach(n => out.push({ kind: t('nk_' + n.kind), title: Links.noteTitle(n), href: '#/journal/' + n.id, hay: [n.title, n.body, n.decision.what, n.decision.why, n.decision.alternatives, n.feedback.who, n.feedback.response, (n.tags || []).join(' ')].join(' ') }));
   Store.all('milestones').forEach(m => out.push({ kind: t('ms_title'), title: m.title + (m.due ? ' · ' + fmtDate(m.due) : ''), href: '#/projects/milestones', hay: [m.title, m.notes, projectName(m.projectId)].join(' ') }));
   Store.all('writingLogs').forEach(l => l.note && out.push({ kind: t('nav_writing'), title: `${fmtDate(l.date)} · ${projectName(l.projectId)} · ${l.words}`, href: '#/writing', hay: l.note }));
-  Store.all('events').forEach(e => out.push({ kind: t('ek_' + e.kind), title: `${e.title} · ${fmtDate(e.date)}${e.recur !== 'none' ? ' ↻' : ''}`, href: '#/calendar/week?d=' + e.date, hay: [e.title, e.location, e.notes].join(' ') }));
+  Store.all('events').forEach(e => out.push({ kind: t('ek_' + e.kind), title: `${e.title} · ${fmtDate(e.date)}${e.recur !== 'none' ? ' · ' + t('rp_' + e.recur).toLowerCase() : ''}`, href: '#/calendar/week?d=' + e.date, hay: [e.title, e.location, e.notes].join(' ') }));
   Store.all('meetings').forEach(m => out.push({ kind: t('ek_meeting'), title: `${meetingTitle(m)} · ${fmtDate(m.date)}`, href: '#/meetings/' + m.id, hay: [m.with, m.notes, (m.agenda || []).map(a => a.text).join(' '), (m.decisions || []).map(a => a.text).join(' '), (m.actions || []).map(a => a.text).join(' ')].join(' ') }));
   Store.all('records').filter(r => !['hours'].includes(r.kind)).forEach(r => out.push({ kind: ['check', 'storage'].includes(r.kind) ? t('rt_ethics') : t('rk_' + r.kind), title: r.title || r.text || r.vendor || r.dataType || r.code || '', href: '#/records/' + ({ check: 'ethics', storage: 'ethics', course: 'courses', contract: 'work', receipt: 'receipts', document: 'documents' }[r.kind] || 'ethics'), hay: [r.title, r.text, r.note, r.notes, r.vendor, r.location, r.code, r.dataType].join(' ') }));
   Store.all('cvItems').forEach(c => out.push({ kind: t('rt_cv'), title: c.title, href: '#/records/cv', hay: [c.title, c.org, c.details].join(' ') }));

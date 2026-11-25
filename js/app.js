@@ -1,20 +1,22 @@
 /* App shell: navigation, routing, shortcuts, theme, save status */
 const ROUTES = { dashboard: DashboardView, library: LibraryView, source: SourceView, projects: ProjectsView, settings: SettingsView, journal: JournalView, argument: ArgumentView, writing: WritingView, calendar: CalendarView, meetings: MeetingsView, records: RecordsView, reviews: ReviewsView, cards: CardsView };
 /* desk: shown in the sidebar, and under "More" on a phone */
+/* sec: sidebar group (plan, research, admin). The order here is the order on a phone's bottom bar. */
 const NAV = [
-  { r: 'dashboard', ico: '◎', k: 'nav_dashboard' },
-  { r: 'calendar', ico: '▦', k: 'nav_calendar' },
-  { r: 'library', ico: '❒', k: 'nav_library' },
-  { r: 'journal', ico: '✎', k: 'nav_journal' },
-  { r: 'projects', ico: '▤', k: 'nav_projects' },
-  { r: 'argument', ico: '⋔', k: 'nav_argument', desk: true },
-  { r: 'writing', ico: '✍', k: 'nav_writing', desk: true },
-  { r: 'meetings', ico: '☷', k: 'nav_meetings', desk: true },
-  { r: 'reviews', ico: '↺', k: 'nav_reviews', desk: true },
-  { r: 'cards', ico: '❏', k: 'nav_cards', desk: true },
-  { r: 'records', ico: '▣', k: 'nav_records', desk: true },
-  { r: 'settings', ico: '⚙', k: 'nav_settings', desk: true },
+  { r: 'dashboard', ico: 'today', k: 'nav_dashboard', sec: 'plan' },
+  { r: 'calendar', ico: 'calendar', k: 'nav_calendar', sec: 'plan' },
+  { r: 'library', ico: 'library', k: 'nav_library', sec: 'research' },
+  { r: 'journal', ico: 'journal', k: 'nav_journal', sec: 'research' },
+  { r: 'projects', ico: 'projects', k: 'nav_projects', sec: 'plan' },
+  { r: 'argument', ico: 'argument', k: 'nav_argument', desk: true, sec: 'research' },
+  { r: 'writing', ico: 'writing', k: 'nav_writing', desk: true, sec: 'research' },
+  { r: 'cards', ico: 'cards', k: 'nav_cards', desk: true, sec: 'research' },
+  { r: 'meetings', ico: 'meetings', k: 'nav_meetings', desk: true, sec: 'admin' },
+  { r: 'reviews', ico: 'reviews', k: 'nav_reviews', desk: true, sec: 'admin' },
+  { r: 'records', ico: 'records', k: 'nav_records', desk: true, sec: 'admin' },
+  { r: 'settings', ico: 'settings', k: 'nav_settings', desk: true, sec: 'end' },
 ];
+const NAV_SECTIONS = ['plan', 'research', 'admin', 'end'];
 const SOON = [];
 
 function applyTheme() {
@@ -22,7 +24,7 @@ function applyTheme() {
   if (th === 'auto') document.documentElement.removeAttribute('data-theme');
   else document.documentElement.setAttribute('data-theme', th);
   const dark = th === 'dark' || (th === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
-  $('#theme-btn').textContent = th === 'auto' ? '◐' : dark ? '☾' : '☀';
+  $('#theme-btn').innerHTML = icon(th === 'auto' ? 'contrast' : dark ? 'moon' : 'sun', 17);
   $('#theme-btn').title = t('theme') + ': ' + t('theme_' + th);
 }
 
@@ -38,9 +40,10 @@ const App = {
   renderNav() {
     const { route } = this.parse();
     const active = route === 'source' ? 'library' : route;
-    $('#nav').innerHTML = NAV.map(n => `<a class="nav-item ${active === n.r ? 'active' : ''} ${n.desk ? 'desk' : ''}" href="#/${n.r}"><span class="ico" aria-hidden="true">${n.ico}</span><span class="long">${esc(t(n.k))}</span><span class="short">${esc(t(n.k + '_s'))}</span></a>`).join('')
-      + `<details class="nav-item more mobile-only ${NAV.some(n => n.desk && n.r === active) ? 'active' : ''}"><summary><span class="ico" aria-hidden="true">⋯</span><span class="short">${esc(t('more'))}</span></summary>
-          <div class="more-pop">${NAV.filter(n => n.desk).map(n => `<a href="#/${n.r}">${n.ico} ${esc(t(n.k))}</a>`).join('')}</div></details>`
+    const item = n => `<a class="nav-item ${active === n.r ? 'active' : ''} ${n.desk ? 'desk' : ''}" href="#/${n.r}" style="order:${NAV.indexOf(n)}"><span class="ico">${icon(n.ico, 17)}</span><span class="long">${esc(t(n.k))}</span><span class="short">${esc(t(n.k + '_s'))}</span></a>`;
+    $('#nav').innerHTML = NAV_SECTIONS.map(sec => `<div class="nav-group nav-${sec}">${sec !== 'end' ? `<div class="nav-label">${esc(t('navsec_' + sec))}</div>` : ''}${NAV.filter(n => n.sec === sec).map(item).join('')}</div>`).join('')
+      + `<details class="nav-item more mobile-only ${NAV.some(n => n.desk && n.r === active) ? 'active' : ''}"><summary><span class="ico">${icon('more', 17)}</span><span class="short">${esc(t('more'))}</span></summary>
+          <div class="more-pop">${NAV.filter(n => n.desk).map(n => `<a href="#/${n.r}">${icon(n.ico, 16)} ${esc(t(n.k))}</a>`).join('')}</div></details>`
       + (SOON.length ? `<div class="nav-sep">${esc(t('nav_coming'))}</div>` : '')
       + SOON.map(([k, st]) => `<span class="nav-item soon">${esc(k === 'nav_projects' ? 'Roadmap & kanban' : t(k))}<small>${esc(t('stage'))} ${st}</small></span>`).join('');
     $('#lang-btn').textContent = LANG === 'en' ? 'FR' : 'EN';
@@ -64,10 +67,10 @@ const App = {
     const el = $('#save-status');
     let txt = '', warn = false;
     if (Store.status === 'saving') txt = t('saving');
-    else if (Store.status === 'error') { txt = '⚠ Save error'; warn = true; }
+    else if (Store.status === 'error') { txt = 'Save error'; warn = true; }
     else if (Store.dirState === 'granted' && Store.lastFileSave) txt = '✓ ' + t('savedAt', { t: fmtTime(Store.lastFileSave) });
     else if (Store.lastBrowserSave) { txt = t('savedBrowser'); warn = Store.dirState !== 'granted'; }
-    if (Sync.phone) { txt = Sync.meta.loadedAt ? '📱 ' + fmtDate(Sync.meta.loadedAt.slice(0, 10), { day: 'numeric', month: 'short' }) : ''; warn = false; }
+    if (Sync.phone) { txt = Sync.meta.loadedAt ? '' + fmtDate(Sync.meta.loadedAt.slice(0, 10), { day: 'numeric', month: 'short' }) : ''; warn = false; }
     el.textContent = txt; el.classList.toggle('warn', warn);
     el.title = Store.dirState === 'granted' ? Store.dir.name + '/phd-data.json' : t('unsaved');
     this.renderSyncBadge();
@@ -76,7 +79,7 @@ const App = {
     const b = $('#sync-btn'); if (!b) return;
     b.hidden = !Sync.phone; if (!Sync.phone) return;
     const n = Sync.pending();
-    b.innerHTML = `⇅${n ? ` <b class="sync-n">${n}</b>` : ''}`; b.title = t('phoneSync');
+    b.innerHTML = `${icon('sync', 16)}${n ? ` <b class="sync-n">${n}</b>` : ''}`; b.title = t('phoneSync');
     b.classList.toggle('has-pending', n > 0);
   }, 600),
 };

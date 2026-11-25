@@ -71,7 +71,7 @@ function modal({ title, body, foot = '', wide = false, onClose }) {
   const back = document.createElement('div');
   back.className = 'modal-backdrop';
   back.innerHTML = `<div class="modal ${wide ? 'wide' : ''}" role="dialog" aria-modal="true" aria-label="${esc(title)}">
-    <div class="modal-head"><h2>${esc(title)}</h2><span class="spacer"></span><button class="btn ghost icon" data-close aria-label="${esc(t('close'))}">✕</button></div>
+    <div class="modal-head"><h2>${esc(title)}</h2><span class="spacer"></span><button class="btn ghost icon" data-close aria-label="${esc(t('close'))}">${icon('x', 14)}</button></div>
     <div class="modal-body">${body}</div>
     ${foot ? `<div class="modal-foot">${foot}</div>` : ''}
   </div>`;
